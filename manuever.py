@@ -11,42 +11,45 @@ def k_turn(px, speed):
     px.forward(speed)
     for angle in range(0, 90):
         px.set_dir_servo_angle(angle)
-        time.sleep(0.01)
+        time.sleep(0.1)
 
     px.backward(speed)
     for angle in range(90, 0, -1):
         px.set_dir_servo_angle(angle)
-        time.sleep(0.01)
+        time.sleep(0.1)
 
     px.forward(speed)
     for angle in range(0, 15):
         px.set_dir_servo_angle(angle)
-        time.sleep(0.01)
+        time.sleep(0.1)
     for angle in range(15, 0, -1):
         px.set_dir_servo_angle(angle)
-        time.sleep(0.01)
+        time.sleep(0.1)
 
     px.forward(0.5)
+    px.stop_motors()
 
 def parallel_park(px, speed):
     px.backward(speed)
     for angle in range(0, 35):
         px.set_dir_servo_angle(angle)
-        time.sleep(0.01)
+        time.sleep(0.1)
 
     px.forward(speed)
     for angle in range(35, 0, -1):
         px.set_dir_servo_angle(angle)
-        time.sleep(0.01)    
+        time.sleep(0.1)    
 
     px.backward(speed)
     time.sleep(1)
+    px.backward(0)
 
 def forward_and_backwards(px, speed, sleep_time):
     px.forward(speed)
     time.sleep(sleep_time)
     px.backward(speed)
     time.sleep(sleep_time)
+    px.backward(0)
 
 if __name__ == "__main__":
     px = Picarx()
