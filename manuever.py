@@ -1,9 +1,9 @@
-# import sys
-# sys.path.append(r'/home/bhagatsj/RobotSystems/lib')
-# from utils import reset_mcu
-# reset_mcu()
+import sys
+sys.path.append(r'/home/bhagatsj/RobotSystems/lib')
+from utils import reset_mcu
+reset_mcu()
 
-# from picarx_improved import Picarx
+from picarx_improved import Picarx
 import time
 
 
