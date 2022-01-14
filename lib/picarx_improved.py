@@ -53,7 +53,7 @@ class Picarx(object):
         self.cali_dir_value = self.config_flie.get("picarx_dir_motor", default_value="[1,1]")
         self.cali_dir_value = [int(i.strip()) for i in self.cali_dir_value.strip("[]").split(",")]
         self.cali_speed_value = [0, 0]
-        self.dir_current_angle = 0
+        self.dir_current_angle = -2
 
         #PWM
         for pin in self.motor_speed_pins:
@@ -157,7 +157,8 @@ class Picarx(object):
             if abs_current_angle > 40:
                 abs_current_angle = 40
             power_scale = (100 - abs_current_angle) / 100.0 
-            logging.info("power_scale:",power_scale)
+
+            logging.info("power_scale:", power_scale)
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, -1*speed)
                 self.set_motor_speed(2, speed * power_scale)
@@ -177,8 +178,9 @@ class Picarx(object):
             if abs_current_angle > 40:
                 abs_current_angle = 40
             power_scale = (100 - abs_current_angle) / 100.0 
-            logging.info("power_scale:",power_scale)
-            
+
+            print(power_scale)
+            logging.info("power_scale: {}".format(power_scale))
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, speed)
                 self.set_motor_speed(2, -1*speed * power_scale)
