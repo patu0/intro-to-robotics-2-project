@@ -31,17 +31,23 @@ def k_turn(px, speed):
 
 def parallel_park(px, speed):
     px.backward(speed)
-    for angle in range(5, 25, 5):
-        px.set_dir_servo_angle(15)
-        time.sleep(1)
-
-    px.forward(speed)
-    for angle in range(25, 0, 5):
+    time.sleep(0.1)
+    #px.set_dir_servo_angle(15)
+    for angle in range(0, 15, 1):
         px.set_dir_servo_angle(angle)
-        time.sleep(0.1)    
+        time.sleep(0.01)
+    time.sleep(1.75)
 
-    px.backward(speed)
+    px.set_dir_servo_angle(35)
+    px.forward(speed)
     time.sleep(1)
+    for angle in range(35, 0, -1):
+        px.set_dir_servo_angle(angle)
+        time.sleep(0.0075)
+
+    time.sleep(0.3)
+    px.backward(speed)
+    time.sleep(0.5)
     px.backward(0)
 
 def forward_and_backwards(px, speed, sleep_time):
@@ -58,7 +64,7 @@ if __name__ == "__main__":
         print("\t1: Forwards and Backwards")
         print("\t2: Parallel Park")
         print("\t3: K-Turn")
-        print("\t4: End program")
+        print("\tq: Quit program")
         print()
         option = input("Enter an manuever: ")
 
@@ -68,11 +74,11 @@ if __name__ == "__main__":
             parallel_park(px, 50)
         elif option == "3":
             k_turn(px, 50)
-        elif option == "4":
+        elif option == "q":
             exit()
         else:
             print()
-            print("Error: Invalid Option.")
+            print("Error: {} is invalid Option.".format(option))
         
 
 
