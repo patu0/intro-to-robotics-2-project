@@ -8,31 +8,29 @@ import time
 
 
 def k_turn(px, speed):
+    px.set_dir_servo_angle(35)
     px.forward(speed)
-    for angle in range(0, 15):
-        px.set_dir_servo_angle(angle)
-        time.sleep(0.1)
+    time.sleep(2)
 
+    px.set_dir_servo_angle(-35)
     px.backward(speed)
-    for angle in range(15, 0, -1):
-        px.set_dir_servo_angle(angle)
-        time.sleep(0.1)
+    time.sleep(2)
 
     px.forward(speed)
-    for angle in range(0, 5):
+    time.sleep(0.1)
+    for angle in range(0, 10, 1):
         px.set_dir_servo_angle(angle)
-        time.sleep(0.1)
-    for angle in range(5, 0, -1):
+        time.sleep(0.05)
+    for angle in range(10, 0, -1):
         px.set_dir_servo_angle(angle)
-        time.sleep(0.1)
+        time.sleep(0.01)
 
-    px.forward(0.5)
+    time.sleep(1)
     px.forward(0)
 
 def parallel_park(px, speed):
     px.backward(speed)
     time.sleep(0.1)
-    #px.set_dir_servo_angle(15)
     for angle in range(0, 15, 1):
         px.set_dir_servo_angle(angle)
         time.sleep(0.01)
