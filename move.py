@@ -15,6 +15,7 @@ def forward_and_backwards(px, speed, sleep_time):
 
 if __name__ == "__main__":
     px = Picarx()
-    forward_and_backwards(px, 50, time)
+    px.set
+    forward_and_backwards(px, 50, 2)
 
 

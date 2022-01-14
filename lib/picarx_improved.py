@@ -55,6 +55,7 @@ class Picarx(object):
         self.cali_dir_value = [int(i.strip()) for i in self.cali_dir_value.strip("[]").split(",")]
         self.cali_speed_value = [0, 0]
         self.dir_current_angle = 0
+        self.set_dir_servo_angle(-0.5)
 
         #PWM
         for pin in self.motor_speed_pins:
@@ -108,6 +109,7 @@ class Picarx(object):
         # global dir_cal_value
         self.dir_current_angle = value
         angle_value  = value + self.dir_cal_value
+        
         logging.info("angle_value:", angle_value)
         # logging.info("set_dir_servo_angle_1:",angle_value)
         # logging.info("set_dir_servo_angle_2:",dir_cal_value)
