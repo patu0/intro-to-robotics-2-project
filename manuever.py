@@ -27,16 +27,16 @@ def k_turn(px, speed):
         time.sleep(0.1)
 
     px.forward(0.5)
-    px.stop_motors()
+    px.forward(0)
 
 def parallel_park(px, speed):
     px.backward(speed)
-    for angle in range(0, 15):
-        px.set_dir_servo_angle(angle)
-        time.sleep(0.1)
+    for angle in range(5, 25, 5):
+        px.set_dir_servo_angle(15)
+        time.sleep(1)
 
     px.forward(speed)
-    for angle in range(15, 0, -1):
+    for angle in range(25, 0, 5):
         px.set_dir_servo_angle(angle)
         time.sleep(0.1)    
 
