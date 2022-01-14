@@ -18,7 +18,7 @@ import threading
 from utils import run_command
 
 # face_recognizer = cv2.face.LBPHFaceRecognizer_create()
-# face_recognizer.read("/home/pi/face_recognizer.yml")
+# face_recognizer.read("/home/bhagatsj/face_recognizer.yml")
 # master_name = ["","chentao","zhangguoliang"]
 
 traffic_num_list = [i for i in range(4)]
@@ -35,12 +35,12 @@ ges_dict = dict(zip(ges_num_list,gesture_list))
 
 
 # test_image_dir = './ges_pic/'
-# traffic_sign_model_path = "/home/pi/sport_camera/example/tf_150_dr0.2.tflite"
-# gesture_model_path = "/home/pi/sport_camera/example/3bak_ges_200_dr0.2.tflite"
+# traffic_sign_model_path = "/home/bhagatsj/sport_camera/example/tf_150_dr0.2.tflite"
+# gesture_model_path = "/home/bhagatsj/sport_camera/example/3bak_ges_200_dr0.2.tflite"
 
-traffic_sign_model_path = "/home/pi/sport_camera/picarx_python_example/tf_150_dr0.2.tflite"
-gesture_model_path = "/home/pi/sport_camera/picarx_python_example/3bak_ges_200_dr0.2.tflite"
-# gesture_model_path = "/home/pi/sport_camera/example/mb1_gesture_200_dr0.2.tflite"
+traffic_sign_model_path = "/home/bhagatsj/sport_camera/picarx_python_example/tf_150_dr0.2.tflite"
+gesture_model_path = "/home/bhagatsj/sport_camera/picarx_python_example/3bak_ges_200_dr0.2.tflite"
+# gesture_model_path = "/home/bhagatsj/sport_camera/example/mb1_gesture_200_dr0.2.tflite"
 
 
 
@@ -110,7 +110,7 @@ def video_feed():
 def video_feed_jpg():
     # from camera import Camera
     """Video streaming route. Put this in the src attribute of an img tag."""
-    # path = "/home/pi/sport_camera/example/cali.jpg"
+    # path = "/home/bhagatsj/sport_camera/example/cali.jpg"
     response = Response(get_frame(), mimetype="image/jpeg")
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
@@ -119,7 +119,7 @@ def video_feed_jpg():
 def video_feed_png():
     # from camera import Camera
     """Video streaming route. Put this in the src attribute of an img tag."""
-    # path = "/home/pi/sport_camera/example/cali.jpg"
+    # path = "/home/bhagatsj/sport_camera/example/cali.jpg"
     response = Response(get_png_frame(), mimetype="image/png")
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
@@ -128,13 +128,13 @@ def video_feed_png():
 # def video_feed_jpg():
     # from camera import Camera
     """Video streaming route. Put this in the src attribute of an img tag."""
-    # path = "/home/pi/sport_camera/example/cali.jpg"
+    # path = "/home/bhagatsj/sport_camera/example/cali.jpg"
     # return Response(get_qrcode_pictrue(), mimetype="image/jpeg") 
 # @app.route('/mjpg.jpg', methods=['post', 'get'])
 # def video_feed_jpg():
 #     path = request.args.get('path')
 #     print(path)
-#     path = "/home/pi/http.jpg/%s" % path
+#     path = "/home/bhagatsj/http.jpg/%s" % path
 
 #     resp = Response(open(path, 'rb'), mimetype="image/jpeg")
 #     return resp
@@ -190,9 +190,9 @@ Camera_SETTING = [
                           #should be included.
 ]
 
-time_font = lambda x: ImageFont.truetype('/home/pi/sport_camera/picarx_python_example/Roboto-Light-2.ttf', int(x / 320.0 * 6))
-text_font = lambda x: ImageFont.truetype('/home/pi/sport_camera/picarx_python_example/Roboto-Light-2.ttf', int(x / 320.0 * 10))
-company_font = lambda x: ImageFont.truetype('/home/pi/sport_camera/picarx_python_example/Roboto-Light-2.ttf', int(x / 320.0 * 8))
+time_font = lambda x: ImageFont.truetype('/home/bhagatsj/sport_camera/picarx_python_example/Roboto-Light-2.ttf', int(x / 320.0 * 6))
+text_font = lambda x: ImageFont.truetype('/home/bhagatsj/sport_camera/picarx_python_example/Roboto-Light-2.ttf', int(x / 320.0 * 10))
+company_font = lambda x: ImageFont.truetype('/home/bhagatsj/sport_camera/picarx_python_example/Roboto-Light-2.ttf', int(x / 320.0 * 8))
 
 
 def add_text_to_image(name, text_1):
@@ -229,7 +229,7 @@ class Vilib(object):
     # picture_path = './picture_file'
     # video_recorder = cv2.VideoWriter(video_path, fourcc, 20.0, (320, 240))
 
-    face_cascade = cv2.CascadeClassifier('/home/pi/sport_camera/picarx_python_example/haarcascade_frontalface_default.xml') 
+    face_cascade = cv2.CascadeClassifier('/home/bhagatsj/sport_camera/picarx_python_example/haarcascade_frontalface_default.xml') 
     kernel_5 = np.ones((5,5),np.uint8)#4x4的卷积核
     # color_default = 'blue'
     # color_dict = {'red':[0,4],'orange':[5,18],'yellow':[22,37],'green':[42,85],'blue':[92,110],'purple':[115,165],'red_2':[166,180]}
@@ -239,10 +239,10 @@ class Vilib(object):
     # cdf_flag = False
     # stf_flag = False
     video_source = 0
-    roi = cv2.imread("/home/pi/sport_camera/picarx_python_example/cali.jpg")
+    roi = cv2.imread("/home/bhagatsj/sport_camera/picarx_python_example/cali.jpg")
     roi_hsv = cv2.cvtColor(roi, cv2.COLOR_BGR2HSV)
 
-    # obj_roi = cv2.imread("/home/pi/sport_camera/example/object.jpg")
+    # obj_roi = cv2.imread("/home/bhagatsj/sport_camera/example/object.jpg")
     # h,w = obj_roi.shape[:2]
 
     # obj_hsv = cv2.cvtColor(obj_roi, cv2.COLOR_BGR2HSV)
@@ -327,7 +327,7 @@ class Vilib(object):
 #picture
     detect_obj_parameter['picture_flag'] = False
     detect_obj_parameter['process_picture'] = True
-    detect_obj_parameter['picture_path'] = '/home/pi/picture_file/' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+ '.jpg'
+    detect_obj_parameter['picture_path'] = '/home/bhagatsj/picture_file/' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')+ '.jpg'
     # detect_obj_parameter['color_default'] = 'red'
 
     # color_dict = {'red':[0,4],'orange':[5,18],'yellow':[22,37],'green':[42,85],'blue':[92,110],'purple':[115,165],'red_2':[166,180]}
@@ -869,7 +869,7 @@ class Vilib(object):
                 # rawCapture = PiRGBArray(camera, size=camera.resolution) 
                 # print("12")
                 picture_time = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-                Vilib.detect_obj_parameter['picture_path'] = '/home/pi/picture_file/' + picture_time + '.jpg'
+                Vilib.detect_obj_parameter['picture_path'] = '/home/bhagatsj/picture_file/' + picture_time + '.jpg'
                 # print(Vilib.detect_obj_parameter['picture_path']) 
 
 
@@ -886,7 +886,7 @@ class Vilib(object):
                     add_text_to_image(Vilib.detect_obj_parameter['picture_path'],Vilib.detect_obj_parameter['watermark'])
 
                 # if Vilib.detect_obj_parameter['google_upload_flag'] == True:
-                #     upload(file_path='/home/pi/Pictures/rascam_picture_file/', file_name=picture_time + '.jpg')
+                #     upload(file_path='/home/bhagatsj/Pictures/rascam_picture_file/', file_name=picture_time + '.jpg')
 
                 #init again
                 # camera.close()
@@ -908,7 +908,7 @@ class Vilib(object):
         if Vilib.detect_obj_parameter['calibrate_flag'] == True:
             # cv2.VideoWriter("./video_file/tt.avi", fourcc, 20.0, (640, 480))
                 # roi_hsv = roi_hsv
-            cv2.imwrite('/home/pi/sport_camera/picarx_python_example/cali.jpg', img[190:290,270:370])
+            cv2.imwrite('/home/bhagatsj/sport_camera/picarx_python_example/cali.jpg', img[190:290,270:370])
             # cv2.rectangle(img,(x,y),(x+w,y+h),(255,0,0),2)
             cv2.rectangle(img,(270,190),(370,290),(255,255,255),2)
 
@@ -921,8 +921,8 @@ class Vilib(object):
         Vilib.detect_obj_parameter['picture_flag'] = True
         Vilib.detect_obj_parameter['process_picture'] = process_picture
         # if Vilib.detect_obj_parameter['picture_flag'] == True:
-        # Vilib.detect_obj_parameter['picture_path'] = '/home/pi/picture_file/' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '.jpg'
-        Vilib.detect_obj_parameter['picture_path'] = '/home/pi/picture_file/' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '.jpg'
+        # Vilib.detect_obj_parameter['picture_path'] = '/home/bhagatsj/picture_file/' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '.jpg'
+        Vilib.detect_obj_parameter['picture_path'] = '/home/bhagatsj/picture_file/' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '.jpg'
             # cv2.VideoWriter("./video_file/tt.avi", fourcc, 20.0, (640, 480))
             # cv2.imwrite(pic_path, Vilib.img_array[0])
 
