@@ -53,7 +53,7 @@ class Picarx(object):
         self.cali_dir_value = self.config_flie.get("picarx_dir_motor", default_value="[1,1]")
         self.cali_dir_value = [int(i.strip()) for i in self.cali_dir_value.strip("[]").split(",")]
         self.cali_speed_value = [0, 0]
-        self.dir_current_angle = -2
+        self.dir_current_angle = 0
 
         #PWM
         for pin in self.motor_speed_pins:
@@ -96,7 +96,7 @@ class Picarx(object):
         self.config_flie.set("picarx_dir_motor", self.cali_dir_value)
 
 
-    def dir_servo_angle_calibration(self,value):
+    def dir_servo_angle_calibration(self, value):
         # global dir_cal_value
         self.dir_cal_value = value
         logging.info("calibrationdir_cal_value:", self.dir_cal_value)
@@ -225,6 +225,7 @@ class Picarx(object):
 
 if __name__ == "__main__":
     px = Picarx()
-
+    
+    px.dir_servo_angle_calibration(1)
     px.forward(50)
     time.sleep(1)
