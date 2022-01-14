@@ -55,7 +55,6 @@ class Picarx(object):
         self.cali_dir_value = [int(i.strip()) for i in self.cali_dir_value.strip("[]").split(",")]
         self.cali_speed_value = [0, 0]
         self.dir_current_angle = 0
-        self.set_dir_servo_angle(-0.5)
 
         #PWM
         for pin in self.motor_speed_pins:
