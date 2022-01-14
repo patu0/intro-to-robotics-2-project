@@ -1,6 +1,7 @@
 import time
 import logging
 import atexit
+import sys
 
 from logdecorator import log_on_start, log_on_end, log_on_error
 
@@ -225,7 +226,7 @@ class Picarx(object):
 
 if __name__ == "__main__":
     px = Picarx()
-    
+
     px.dir_servo_angle_calibration(1)
     px.forward(50)
     time.sleep(1)
