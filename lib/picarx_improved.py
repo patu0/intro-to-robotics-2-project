@@ -101,7 +101,7 @@ class Picarx(object):
     def dir_servo_angle_calibration(self, value):
         # global dir_cal_value
         self.dir_cal_value = value
-        logging.info("calibrationdir_cal_value:", self.dir_cal_value)
+        logging.info("calibrationdir_cal_value:{}".format(self.dir_cal_value))
         self.config_flie.set("picarx_dir_servo", "%s"%value)
         self.dir_servo_pin.angle(value)
 
@@ -109,36 +109,35 @@ class Picarx(object):
         # global dir_cal_value
         self.dir_current_angle = value
         angle_value  = value + self.dir_cal_value
-        
-        logging.info("angle_value:", angle_value)
-        # logging.info("set_dir_servo_angle_1:",angle_value)
-        # logging.info("set_dir_servo_angle_2:",dir_cal_value)
+        logging.info("angle_value: {}".format(angle_value))
+        # logging.info("set_dir_servo_angle_1:{}".format(angle_value))
+        # logging.info("set_dir_servo_angle_2:{}".format(dir_cal_value))
         self.dir_servo_pin.angle(angle_value)
 
     def camera_servo1_angle_calibration(self,value):
         # global cam_cal_value_1
         self.cam_cal_value_1 = value
         self.config_flie.set("picarx_cam1_servo", "%s"%value)
-        logging.info("cam_cal_value_1:", self.cam_cal_value_1)
+        logging.info("cam_cal_value_1:{}".format( self.cam_cal_value_1))
         self.camera_servo_pin1.angle(value)
 
     def camera_servo2_angle_calibration(self,value):
         # global cam_cal_value_2
         self.cam_cal_value_2 = value
-        self.config_flie.set("picarx_cam2_servo", "%s"%value)
-        logging.info("picarx_cam2_servo:",self.cam_cal_value_2)
+        self.config_flie.set("picarx_cam2_servo ", "%s"%value)
+        logging.info("picarx_cam2_servo: {}".format(self.cam_cal_value_2))
         self.camera_servo_pin2.angle(value)
 
     def set_camera_servo1_angle(self,value):
         # global cam_cal_value_1
         self.camera_servo_pin1.angle(-1*(value + -1*self.cam_cal_value_1))
-        # logging.info("self.cam_cal_value_1:",self.cam_cal_value_1)
+        # logging.info("self.cam_cal_value_1:{}".format(self.cam_cal_value_1))
         logging.info((value + self.cam_cal_value_1))
 
     def set_camera_servo2_angle(self,value):
         # global cam_cal_value_2
         self.camera_servo_pin2.angle(-1*(value + -1*self.cam_cal_value_2))
-        # logging.info("self.cam_cal_value_2:",self.cam_cal_value_2)
+        # logging.info("self.cam_cal_value_2:{}".format(self.cam_cal_value_2)
         logging.info((value + self.cam_cal_value_2))
 
     def get_adc_value(self):
@@ -161,7 +160,7 @@ class Picarx(object):
                 abs_current_angle = 40
             power_scale = (100 - abs_current_angle) / 100.0 
 
-            logging.info("power_scale:", power_scale)
+            logging.info("power_scale: {}".format(power_scale))
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, -1*speed)
                 self.set_motor_speed(2, speed * power_scale)
@@ -182,7 +181,6 @@ class Picarx(object):
                 abs_current_angle = 40
             power_scale = (100 - abs_current_angle) / 100.0 
 
-            print(power_scale)
             logging.info("power_scale: {}".format(power_scale))
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, speed)
@@ -228,7 +226,5 @@ class Picarx(object):
 
 if __name__ == "__main__":
     px = Picarx()
-
-    px.dir_servo_angle_calibration(1)
     px.forward(50)
-    time.sleep(1)
+    time.sleep(0)
