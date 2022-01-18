@@ -29,23 +29,30 @@ class Grayscale_Interpreter():
 
         assert((self.pol == 1) or (self.pol == -1))
 
-    def get_line_status(self, adc_list):          
-        diff1 = (adc_list[0]-adc_list[1])*self.pol
-        diff2 = (adc_list[2]-adc_list[1])*self.pol
+    def get_line_status(self, adc_list): 
+        #If on the line these should be large, otherwise they'll be small         
+        center_diff1 = adc_list[1]-adc_list[0]
+        center_diff2 = adc_list[1]-adc_list[2]
+        edge_diff = adc_list[0]-adc_list[2]
+        if self.pol <= 0:
+            #If pol < 0, we want to look for a lighter line
+            center_diff1 *= -1
+            center_diff2 *= 2
 
-        logging.debug("Diff1: {}".format(diff1))
-        logging.debug("Diff2: {}".format(diff2))
-        line_direction = "unclear"
-        if diff1 > self.sens:
-            return 'left'
-        elif diff2 > self.sens:
-            return 'right'
+        #Get relative direction of th eline
+        line_direction = "straight"
+        if center_diff1 < self.sens:
+            line_direction = 'left'
+        elif center_diff2 < self.sens:
+            line_direction = 'right'
 
+        logging.debug("Center Diff 1: {}".format(center_diff1))
+        logging.debug("Center Diff 2: {}".format(center_diff2))
         logging.debug("Line Direction: {}".format(line_direction))
         return line_direction
 
     def get_manuever_val(self, adc_list):
-        line_direction = self.get_line_status(adc_list)
+        line_direction, scale = self.get_line_status(adc_list)
 
         maneuver_val = 0
         if line_direction == "left":
@@ -61,7 +68,7 @@ class Controller():
     def __init__(self, car, sensor, scale=1.0):
         self.car = car
         self.sensor = sensor
-        self.angle = 10
+        self.angle = 5
         self.scale = scale
 
     def get_turn_angle(self):
@@ -72,7 +79,6 @@ class Controller():
 
         return angle
 
-
     def test(self):
         self.get_turn_angle()
         time.sleep(2)
@@ -82,15 +88,13 @@ class Controller():
         start_time = time.time()
         rel_time = 0
 
-        self.car.forward(30)
+        self.car.forward(20)
         while rel_time < duration:
             angle = self.get_turn_angle()
-            self.car.set_dir_servo_angle(angle)
-            time.sleep(1.5)
-            self.car.set_dir_servo_angle(-angle)
-            time.sleep(1)
-            self.car.set_dir_servo_angle(0)
-            time.sleep(0.5)
+            if angle != prev_angle:
+                self.car.set_dir_servo_angle(angle)
+            
+            prev_angle = angle
             rel_time = time.time() - start_time
         self.car.stop()
         
