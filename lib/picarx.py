@@ -143,7 +143,7 @@ class Picarx(object):
         adc_value_list.append(self.S1.read())
         adc_value_list.append(self.S2.read())
 
-        logging.debug("ADC List: {}".format(adc_list))
+        logging.debug("ADC List: {}".format(adc_value_list))
         return adc_value_list
 
     def set_power(self,speed):

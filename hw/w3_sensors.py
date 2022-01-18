@@ -70,21 +70,28 @@ class Controller():
         maneuver_val = self.sensor.get_manuever_val(adc_list)
         angle = self.scale*self.angle*maneuver_val
 
-        logging.debug("Turn angle: {}".format(angle))
         return angle
+
+
+    def test(self):
+        self.get_turn_angle()
+        time.sleep(2)
 
     def swerve_loop(self, duration):
         #Controller loop to drive left and right over a line
+        start_time = time.time()
         rel_time = 0
+
         self.car.forward(30)
         while rel_time < duration:
             angle = self.get_turn_angle()
-            if angle != 0:
-                self.car.set_dir_servo_angle(angle)
-                time.sleep(1)
-                self.car.set_dir_servo_angle(0)
-                time.sleep(0.5)
-            rel_time += 0.6
+            self.car.set_dir_servo_angle(angle)
+            time.sleep(1.5)
+            self.car.set_dir_servo_angle(-angle)
+            time.sleep(1)
+            self.car.set_dir_servo_angle(0)
+            time.sleep(0.5)
+            rel_time = time.time() - start_time
         self.car.stop()
         
     def follow_line():
@@ -93,17 +100,19 @@ class Controller():
 
 
 def main(config):
+    print(config.debug)
     if config.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
     car = Picarx()
     sensor = Grayscale_Interpreter(75, 1.0)
-    controller = Controller(car, sensor)
-    controller.swerve_loop(6)
+    controller = Controller(car, sensor, scale=0.9)
+    while True:
+        controller.test()
+    #controller.swerve_loop(10)
 
 if __name__ == "__main__":
-    argparse = argparse.ArgumentParser()
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--debug', action='store_false',
+    parser.add_argument('-d', '--debug', action='store_true',
                         help='Debug flag')
     main(parser.parse_args())
