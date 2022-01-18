@@ -52,7 +52,7 @@ class Grayscale_Interpreter():
         return line_direction
 
     def get_manuever_val(self, adc_list):
-        line_direction, scale = self.get_line_status(adc_list)
+        line_direction = self.get_line_status(adc_list)
 
         maneuver_val = 0
         if line_direction == "left":
@@ -87,14 +87,16 @@ class Controller():
         #Controller loop to drive left and right over a line
         start_time = time.time()
         rel_time = 0
+        prev_angle = 0
 
-        self.car.forward(20)
+        self.car.forward(30)
         while rel_time < duration:
             angle = self.get_turn_angle()
             if angle != prev_angle:
                 self.car.set_dir_servo_angle(angle)
             
             prev_angle = angle
+            time.sleep(0.5)
             rel_time = time.time() - start_time
         self.car.stop()
         
@@ -111,9 +113,9 @@ def main(config):
     car = Picarx()
     sensor = Grayscale_Interpreter(75, 1.0)
     controller = Controller(car, sensor, scale=0.9)
-    while True:
-        controller.test()
-    #controller.swerve_loop(10)
+    #while True:
+    #    controller.test()
+    controller.swerve_loop(10)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
