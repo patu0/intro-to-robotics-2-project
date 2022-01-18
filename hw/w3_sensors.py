@@ -37,44 +37,44 @@ class Grayscale_Interpreter():
         else:
             return 'unclear'
 
-class Controller():
-    '''Class that controls the Picarx'''
-    def __init__(self, car, sensitivity, polarity, scale=1.0):
-        #Car object
-        self.car = car
-
-        #Control specific values
-        self.sensor = Grayscale_Interpreter(sensitivity, polarity)
-        self.angle = 10
-        self.scale = scale
-
-    def get_line_location(self):
-        adc_list = self.car.get_adc_value()
-        line_direction = self.sensor.get_line_status(adc_list)
+    def get_manuever_val(self, adc_list):
+        line_direction = self.get_line_status(adc_list)
 
         maneuver_val = -1 if line_direction == "left" else 1
         return maneuver_val
 
-    def turn(self, maneuver_val):
-        angle = self.scale*self.angle*maneuver_val
-        self.car.set_dir_servo_angle(angle)
-        time.sleep(1)
-        self.car.set_dir_servo_angle(0)
+class Controller():
+    '''Class that controls the Picarx'''
+    def __init__(self, car, sensor, scale=1.0):
+        self.car = car
+        self.sensor = sensor
+        self.angle = 10
+        self.scale = scale
 
-    def test(self):
-        adc_list = self.car.get_adc_value()
-        print(adc_list)
-        print(self.sensor.get_line_status(adc_list))
+    def get_turn_angle(self):
+        #Calculate turn angle
+        maneuver_val = self.sensor.get_manuever_val()
+        return self.scale*self.angle*maneuver_val
 
-def swerve_loop():
-    print('drive back and forth over the line')
-
-def drive_straight():
-    print('drive straight')
+    def swerve_loop(self, duration):
+        #Controller loop to drive left and right over a line
+        rel_time = 0
+        while rel_time < duration:
+            angle = self.get_turn_angle()
+            if angle != 0:
+                self.car.set_dir_servo_angle(angle)
+                time.sleep(0.5)
+                self.car.set_dir_servo_angle(0)
+                time.sleep(0.1)
+            rel_time += 0.6
+        
+    def follow_line():
+        #Controller loop to follow the line
+        print('drive straight')
 
 if __name__ == "__main__":
     car = Picarx()
-    controller = Controller(car, 75, 1.0)
-    while True:
-        controller.test()
-        time.sleep(1)
+    sensor = Grayscale_Interpreter(75, 1.0)
+    controller = Controller(car, sensor)
+
+    controller.swerve_loop(6)
