@@ -8,23 +8,16 @@ import time
 
 
 def k_turn(px, speed):
-    px.set_dir_servo_angle(35)
+    px.set_dir_servo_angle(-30)
     px.forward(speed)
     time.sleep(2)
 
-    px.set_dir_servo_angle(-35)
+    px.set_dir_servo_angle(30)
     px.backward(speed)
-    time.sleep(2)
+    time.sleep(1.5)
 
+    px.set_dir_servo_angle(0)
     px.forward(speed)
-    time.sleep(0.1)
-    for angle in range(0, 10, 1):
-        px.set_dir_servo_angle(angle)
-        time.sleep(0.05)
-    for angle in range(10, 0, -1):
-        px.set_dir_servo_angle(angle)
-        time.sleep(0.01)
-
     time.sleep(1)
     px.forward(0)
 
