@@ -79,12 +79,8 @@ class Controller():
 
         return angle
 
-    def test(self):
-        self.get_turn_angle()
-        time.sleep(2)
-
-    def swerve_loop(self, duration):
-        #Controller loop to drive left and right over a line
+    def follow_line(self, duration):
+        #Start on line and follow it.
         start_time = time.time()
         rel_time = 0
         prev_angle = 0
@@ -99,26 +95,21 @@ class Controller():
             time.sleep(0.5)
             rel_time = time.time() - start_time
         self.car.stop()
-        
-    def follow_line():
-        #Controller loop to follow the line
-        print('drive straight')
 
 
 def main(config):
-    print(config.debug)
     if config.debug:
         logging.getLogger().setLevel(logging.DEBUG)
 
     car = Picarx()
     sensor = Grayscale_Interpreter(75, 1.0)
     controller = Controller(car, sensor, scale=0.9)
-    #while True:
-    #    controller.test()
-    controller.swerve_loop(10)
+    controller.swerve_loop(config.time)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument('-t', '--time', default=10,
+                        help='Duration of running the program')
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Debug flag')
     main(parser.parse_args())
