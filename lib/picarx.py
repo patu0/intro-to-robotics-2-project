@@ -18,8 +18,6 @@ except (ImportError, PermissionError) as e :
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.INFO , datefmt="%H:%M:%S ")
-logging.getLogger().setLevel(logging.DEBUG)
-
 
 class Picarx(object):
     PERIOD = 4095
@@ -100,7 +98,7 @@ class Picarx(object):
     def dir_servo_angle_calibration(self, value):
         # global dir_cal_value
         self.dir_cal_value = value
-        logging.info("calibrationdir_cal_value:{}".format(self.dir_cal_value))
+        logging.debug("calibrationdir_cal_value:{}".format(self.dir_cal_value))
         self.config_flie.set("picarx_dir_servo", "%s"%value)
         self.dir_servo_pin.angle(value)
 
@@ -108,42 +106,44 @@ class Picarx(object):
         # global dir_cal_value
         self.dir_current_angle = value
         angle_value  = value + self.dir_cal_value
-        logging.info("angle_value: {}".format(angle_value))
-        # logging.info("set_dir_servo_angle_1:{}".format(angle_value))
-        # logging.info("set_dir_servo_angle_2:{}".format(dir_cal_value))
+        logging.debug("angle_value: {}".format(angle_value))
+        # logging.debug("set_dir_servo_angle_1:{}".format(angle_value))
+        # logging.debug("set_dir_servo_angle_2:{}".format(dir_cal_value))
         self.dir_servo_pin.angle(angle_value)
 
     def camera_servo1_angle_calibration(self,value):
         # global cam_cal_value_1
         self.cam_cal_value_1 = value
         self.config_flie.set("picarx_cam1_servo", "%s"%value)
-        logging.info("cam_cal_value_1:{}".format( self.cam_cal_value_1))
+        logging.debug("cam_cal_value_1:{}".format( self.cam_cal_value_1))
         self.camera_servo_pin1.angle(value)
 
     def camera_servo2_angle_calibration(self,value):
         # global cam_cal_value_2
         self.cam_cal_value_2 = value
         self.config_flie.set("picarx_cam2_servo ", "%s"%value)
-        logging.info("picarx_cam2_servo: {}".format(self.cam_cal_value_2))
+        logging.debug("picarx_cam2_servo: {}".format(self.cam_cal_value_2))
         self.camera_servo_pin2.angle(value)
 
     def set_camera_servo1_angle(self,value):
         # global cam_cal_value_1
         self.camera_servo_pin1.angle(-1*(value + -1*self.cam_cal_value_1))
-        # logging.info("self.cam_cal_value_1:{}".format(self.cam_cal_value_1))
-        logging.info((value + self.cam_cal_value_1))
+        # logging.debug("self.cam_cal_value_1:{}".format(self.cam_cal_value_1))
+        logging.debug((value + self.cam_cal_value_1))
 
     def set_camera_servo2_angle(self,value):
         # global cam_cal_value_2
         self.camera_servo_pin2.angle(-1*(value + -1*self.cam_cal_value_2))
-        # logging.info("self.cam_cal_value_2:{}".format(self.cam_cal_value_2)
-        logging.info((value + self.cam_cal_value_2))
+        # logging.debug("self.cam_cal_value_2:{}".format(self.cam_cal_value_2)
+        logging.debug((value + self.cam_cal_value_2))
 
     def get_adc_value(self):
         adc_value_list = []
         adc_value_list.append(self.S0.read())
         adc_value_list.append(self.S1.read())
         adc_value_list.append(self.S2.read())
+
+        logging.debug("ADC List: {}".format(adc_list))
         return adc_value_list
 
     def set_power(self,speed):
@@ -159,7 +159,7 @@ class Picarx(object):
                 abs_current_angle = 40
             power_scale = (100 - abs_current_angle) / 100.0 
 
-            logging.info("power_scale: {}".format(power_scale))
+            logging.debug("power_scale: {}".format(power_scale))
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, -1*speed)
                 self.set_motor_speed(2, speed * power_scale)
@@ -180,7 +180,7 @@ class Picarx(object):
                 abs_current_angle = 40
             power_scale = (100 - abs_current_angle) / 100.0 
 
-            logging.info("power_scale: {}".format(power_scale))
+            logging.debug("power_scale: {}".format(power_scale))
             if (current_angle / abs_current_angle) > 0:
                 self.set_motor_speed(1, speed)
                 self.set_motor_speed(2, -1*speed * power_scale)
@@ -220,7 +220,7 @@ class Picarx(object):
                 return -2
         during = pulse_end - pulse_start
         cm = round(during * 340 / 2 * 100, 2)
-        #logging.info(cm)
+        #logging.debug(cm)
         return cm
 
 if __name__ == "__main__":

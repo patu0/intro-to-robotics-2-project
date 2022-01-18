@@ -1,15 +1,13 @@
+import argparse
 import sys
 import time
 import logging
-sys.path.append(r'/home/bhagatsj/RobotSystems/lib')
 
-from grayscale_module import Grayscale_Module
+sys.path.append(r'/home/bhagatsj/RobotSystems/lib')
 from picarx import Picarx
-from adc import ADC
 
 logging_format = "%(asctime)s: %(message)s"
-logging.basicConfig(format=logging_format, level=logging.INFO , datefmt="%H:%M:%S ")
-logging.getLogger().setLevel(logging.DEBUG)
+logging.basicConfig(format=logging_format, level=logging.ERROR , datefmt="%H:%M:%S ")
 
 class Grayscale_Interpreter():
     """
@@ -35,18 +33,27 @@ class Grayscale_Interpreter():
         diff1 = (adc_list[0]-adc_list[1])*self.pol
         diff2 = (adc_list[2]-adc_list[1])*self.pol
 
+        logging.debug("Diff1: {}".format(diff1))
+        logging.debug("Diff2: {}".format(diff2))
+        line_direction = "unclear"
         if diff1 > self.sens:
             return 'left'
         elif diff2 > self.sens:
             return 'right'
-        else:
-            return 'unclear'
+
+        logging.debug("Line Direction: {}".format(line_direction))
+        return line_direction
 
     def get_manuever_val(self, adc_list):
-        logging.debug(adc_list)
         line_direction = self.get_line_status(adc_list)
 
-        maneuver_val = -1 if line_direction == "left" else 1
+        maneuver_val = 0
+        if line_direction == "left":
+            maneuver_val = -1
+        elif line_direction == "right":
+            maneuver_val = 1
+
+        logging.debug("Manuever Val: {}".format(maneuver_val))
         return maneuver_val
 
 class Controller():
@@ -61,7 +68,10 @@ class Controller():
         #Calculate turn angle
         adc_list = self.car.get_adc_value()
         maneuver_val = self.sensor.get_manuever_val(adc_list)
-        return self.scale*self.angle*maneuver_val
+        angle = self.scale*self.angle*maneuver_val
+
+        logging.debug("Turn angle: {}".format(angle))
+        return angle
 
     def swerve_loop(self, duration):
         #Controller loop to drive left and right over a line
@@ -81,9 +91,19 @@ class Controller():
         #Controller loop to follow the line
         print('drive straight')
 
-if __name__ == "__main__":
+
+def main(config):
+    if config.debug:
+        logging.getLogger().setLevel(logging.DEBUG)
+
     car = Picarx()
     sensor = Grayscale_Interpreter(75, 1.0)
     controller = Controller(car, sensor)
-
     controller.swerve_loop(6)
+
+if __name__ == "__main__":
+    argparse = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-d', '--debug', action='store_false',
+                        help='Debug flag')
+    main(parser.parse_args())
