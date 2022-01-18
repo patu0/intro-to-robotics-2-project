@@ -1,10 +1,15 @@
 import sys
 import time
+import logging
 sys.path.append(r'/home/bhagatsj/RobotSystems/lib')
 
 from grayscale_module import Grayscale_Module
 from picarx import Picarx
 from adc import ADC
+
+logging_format = "%(asctime)s: %(message)s"
+logging.basicConfig(format=logging_format, level=logging.INFO , datefmt="%H:%M:%S ")
+logging.getLogger().setLevel(logging.DEBUG)
 
 class Grayscale_Interpreter():
     """
@@ -38,6 +43,7 @@ class Grayscale_Interpreter():
             return 'unclear'
 
     def get_manuever_val(self, adc_list):
+        logging.debug(adc_list)
         line_direction = self.get_line_status(adc_list)
 
         maneuver_val = -1 if line_direction == "left" else 1
@@ -53,20 +59,23 @@ class Controller():
 
     def get_turn_angle(self):
         #Calculate turn angle
-        maneuver_val = self.sensor.get_manuever_val()
+        adc_list = self.car.get_adc_value()
+        maneuver_val = self.sensor.get_manuever_val(adc_list)
         return self.scale*self.angle*maneuver_val
 
     def swerve_loop(self, duration):
         #Controller loop to drive left and right over a line
         rel_time = 0
+        self.car.forward(30)
         while rel_time < duration:
             angle = self.get_turn_angle()
             if angle != 0:
                 self.car.set_dir_servo_angle(angle)
-                time.sleep(0.5)
+                time.sleep(1)
                 self.car.set_dir_servo_angle(0)
-                time.sleep(0.1)
+                time.sleep(0.5)
             rel_time += 0.6
+        self.car.stop()
         
     def follow_line():
         #Controller loop to follow the line
