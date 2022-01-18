@@ -13,22 +13,25 @@ class Grayscale_Interpreter():
         self.polarity = polarity
 
     def get_line_status(self, fl_list):
-        if fl_list[0] <= self.ref:
+        if fl_list[0] > self.ref and fl_list[1] > self.ref and fl_list[2] > self.ref:
+            return 'stop'
+        elif fl_list[1] <= self.ref:
+            return 'forward'
+        elif fl_list[0] <= self.ref:
             return 'right'
         elif fl_list[2] <= self.ref:
             return 'left'
 
 class Controller():
     '''Class that controls the Picarx'''
-    def __init__(self, scale, sensitivity, polarity, ref=1000):
+    def __init__(self, sensitivity, polarity, scale=1.0):
         #Car object
-        self.car = Picarx()
+        self.car = car
 
         #Control specific values
         self.sensor = Grayscale_Interpreter(sensitivity, polarity)
         self.angle = 10
         self.scale = scale
-        self.ref = ref
 
     def get_line_location(self):
         adc_list = self.car.get_adc_value()
@@ -43,11 +46,19 @@ class Controller():
         time.sleep(1)
         self.car.set_dir_servo_angle(0)
 
+    def test(self):
+        print(self.sensor.get_line_status())
 
+def swerve_loop():
+    print('drive back and forth over the line')
+
+def drive_straight():
+    print('drive straight')
 
 if __name__ == "__main__":
     import time
-    GM = Grayscale_Module(950)
+    car = Picarx()
+    controller = Controller(car, 50, 220)
     while True:
-        print(GM.get_grayscale_data())
+        controller.test()
         time.sleep(1)
