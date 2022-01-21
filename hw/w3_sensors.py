@@ -104,7 +104,7 @@ def main(config):
     car = Picarx()
     sensor = Grayscale_Interpreter(75, 1.0)
     controller = Controller(car, sensor, scale=0.9)
-    controller.swerve_loop(config.time)
+    controller.follow_line(config.time)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
