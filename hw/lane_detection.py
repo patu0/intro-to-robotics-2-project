@@ -6,7 +6,8 @@ import logging
 
 def detect_lane(frame):
     """Function that takes a frame a return a list of lane lines"""
-    edges = detect_edges(frame)
+    resize_frame = cv2.resize(frame, (160,120), interpolation=cv2.INTER_LINEAR)
+    edges = detect_edges(resize_frame)
     cropped_edges = region_of_interest(edges)
     line_segments = detect_line_segments(cropped_edges)
     lane_lines = average_slope_intercept(frame, line_segments)

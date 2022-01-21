@@ -114,10 +114,11 @@ class Controller():
 
         self.car.forward(30)
         start_time = time.time()
-        for frame in self.camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
+        for frame in self.camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             #Repurpose lane lines to simply follow a line
-            height, width, _ = frame.shap
-            lane_lines = detect_lane(frame)
+            img = frame.array
+            height, width, _ = img.shape
+            lane_lines = detect_lane(img)
             x1, _, x2, _ = lane_lines[0][0]
             x_offset = x2 - x1
             y_offset = int(height / 2)
