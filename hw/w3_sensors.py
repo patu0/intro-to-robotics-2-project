@@ -146,7 +146,9 @@ def main(config):
     sensor = Grayscale_Interpreter(75, 1.0)
     camera = PiCamera()
     controller = Controller(car, sensor, camera, scale=0.9)
-    controller.follow_line(config.time)
+
+    # controller.follow_line_cv(config.time)
+    controller.follow_line_cv(config.time)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
