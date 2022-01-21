@@ -47,7 +47,6 @@ class Picarx(object):
             pin.prescaler(self.PRESCALER)
 
 
-
     def set_motor_speed(self,motor,speed):
         # global cali_speed_value,cali_dir_value
         motor -= 1

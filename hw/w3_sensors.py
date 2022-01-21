@@ -1,13 +1,18 @@
-import argparse
 import sys
+import math
 import time
 import logging
+import argparse
+import numpy as np
+from lane_detection import detect_lane
 
 sys.path.append(r'/home/bhagatsj/RobotSystems/lib')
 from picarx import Picarx
 from utils import reset_mcu
-reset_mcu()
+from picamera import PiCamera
+from picamera.array import PiRGBArray
 
+reset_mcu()
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.ERROR , datefmt="%H:%M:%S ")
@@ -68,11 +73,12 @@ class Grayscale_Interpreter():
 
 class Controller():
     '''Class that controls the Picarx'''
-    def __init__(self, car, sensor, scale=1.0):
+    def __init__(self, car, sensor, camera, scale=1.0):
         self.car = car
         self.sensor = sensor
         self.angle = 5
         self.scale = scale
+        self.camera = camera
 
     def get_turn_angle(self):
         #Calculate turn angle
@@ -83,7 +89,7 @@ class Controller():
         return angle
 
     def follow_line(self, duration):
-        #Start on line and follow it.
+        """Follow the line using grey scale camera"""
         start_time = time.time()
         rel_time = 0
         prev_angle = 0
@@ -99,6 +105,37 @@ class Controller():
             rel_time = time.time() - start_time
         self.car.stop()
 
+    def follow_line_cv(self, duration):
+        """Follow the line using computer vision"""
+        rel_time = 0
+        self.camera.resolution = (640,480)
+        self.camera.framerate = 24
+        rawCapture = PiRGBArray(self.camera, size=self.camera.resolution)  
+
+        self.car.forward(30)
+        start_time = time.time()
+        for frame in self.camera.capture_continuous(rawCapture, format="bgr",use_video_port=True):
+            #Repurpose lane lines to simply follow a line
+            height, width, _ = frame.shap
+            lane_lines = detect_lane(frame)
+            x1, _, x2, _ = lane_lines[0][0]
+            x_offset = x2 - x1
+            y_offset = int(height / 2)
+
+            angle_to_mid_radian = math.atan(x_offset / y_offset)  # angle (in radian) to center vertical line
+            angle_to_mid_deg = int(angle_to_mid_radian * 180.0 / math.pi)  # angle (in degrees) to center vertical line
+            steering_angle = angle_to_mid_deg + 90  # this is the steering angle needed by picar front wheel
+
+            logging.debug('new steering angle: %s' % steering_angle)
+            self.car.set_dir_servo_angle(steering_angle)
+            time.sleep(0.5)
+
+            rel_time = time.time() - start_time
+            if rel_time >= duration:
+                break
+        self.car.stop()
+
+
 
 def main(config):
     if config.debug:
@@ -106,7 +143,8 @@ def main(config):
 
     car = Picarx()
     sensor = Grayscale_Interpreter(75, 1.0)
-    controller = Controller(car, sensor, scale=0.9)
+    camera = PiCamera()
+    controller = Controller(car, sensor, camera, scale=0.9)
     controller.follow_line(config.time)
 
 if __name__ == "__main__":
