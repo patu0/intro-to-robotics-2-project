@@ -5,6 +5,9 @@ import logging
 
 sys.path.append(r'/home/bhagatsj/RobotSystems/lib')
 from picarx import Picarx
+from utils import reset_mcu
+reset_mcu()
+
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.ERROR , datefmt="%H:%M:%S ")
