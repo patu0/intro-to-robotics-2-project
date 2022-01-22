@@ -107,6 +107,7 @@ class Controller():
             rel_time = time.time() - start_time
         self.car.stop()
 
+    #FIXME: This is definitely still a WIP, it doesn't properly work yet.
     def follow_line_cv(self, duration):
         """Follow the line using computer vision"""
         rel_time = 0
@@ -158,9 +159,8 @@ def main(config):
     time.sleep(2) #let the camera warm up
     controller = Controller(car, sensor, camera, scale=0.9)
 
-
+    controller.follow_line(config.time)
     # controller.follow_line_cv(config.time)
-    controller.follow_line_cv(config.time)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
