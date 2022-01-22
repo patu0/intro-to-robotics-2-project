@@ -3,7 +3,7 @@ sys.path.append(r'/home/bhagatsj/RobotSystems/lib')
 from utils import reset_mcu
 reset_mcu()
 
-from picarx_improved import Picarx
+from picarx import Picarx
 import time
 
 

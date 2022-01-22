@@ -1,14 +1,13 @@
 from adc import ADC
 
 class Grayscale_Module(object):
-    def __init__(self,ref = 1000):
+    def __init__(self, ref=1000):
         self.chn_0 = ADC("A0")
         self.chn_1 = ADC("A1")
         self.chn_2 = ADC("A2")
         self.ref = ref
 
-
-    def get_line_status(self,fl_list):
+    def get_line_status(self, fl_list):
 
         if fl_list[0] > self.ref and fl_list[1] > self.ref and fl_list[2] > self.ref:
             return 'stop'
