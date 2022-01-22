@@ -13,7 +13,7 @@ from utils import reset_mcu
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 
-_SHOW_IMAGE = True
+_SHOW_IMAGE = False
 
 
 class HandCodedLaneFollower(object):
@@ -51,21 +51,21 @@ class HandCodedLaneFollower(object):
 # Frame processing steps
 ############################
 def detect_lane(frame):
-    logging.debug('detecting lane lines...')
-
+    print('detecting lane lines...')
+    cv2.imwrite("frame.jpg", frame)
     edges = detect_edges(frame)
-    show_image('edges', edges)
+    cv2.imwrite('edges.jpg', edges)
 
     cropped_edges = region_of_interest(edges)
-    show_image('edges cropped', cropped_edges)
+    cv2.imwrite('edges_cropped.jpg', cropped_edges)
 
     line_segments = detect_line_segments(cropped_edges)
     line_segment_image = display_lines(frame, line_segments)
-    show_image("line segments", line_segment_image)
+    cv2.imwrite("line_segments.jpg", line_segment_image)
 
     lane_lines = average_slope_intercept(frame, line_segments)
     lane_lines_image = display_lines(frame, lane_lines)
-    show_image("lane lines", lane_lines_image)
+    cv2.imwrite("lane_lines.jpg", lane_lines_image)
 
     return lane_lines, lane_lines_image
 
@@ -73,11 +73,11 @@ def detect_lane(frame):
 def detect_edges(frame):
     # filter for blue lane lines
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    show_image("hsv", hsv)
+    cv2.imwrite("hsv.jpg", hsv)
     lower_blue = np.array([30, 40, 0])
     upper_blue = np.array([150, 255, 255])
     mask = cv2.inRange(hsv, lower_blue, upper_blue)
-    show_image("blue mask", mask)
+    cv2.imwrite("blue_mask.jpg", mask)
 
     # detect edges
     edges = cv2.Canny(mask, 200, 400)
@@ -315,13 +315,14 @@ def test_photo(file):
 
 
 def test_video(car, camera):
+    car.set_camera_servo2_angle(-25)
     rel_time = 0
     camera.resolution = (640,480)
     camera.framerate = 24
-    rawCapture = PiRGBArray(self.camera, size=self.camera.resolution)  
+    rawCapture = PiRGBArray(camera, size=camera.resolution)  
 
     start_time = time.time()
-    for frame in self.camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+    for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         #Repurpose lane lines to simply follow a line
         img = frame.array
         detect_lane(img)
@@ -335,6 +336,7 @@ def test_video(car, camera):
 if __name__ == '__main__':
     car = Picarx()
     camera = PiCamera()
+    time.sleep(2) #Let camera warm up
     controller = test_video(car, camera)
 
     # controller.follow_line_cv(config.time)
