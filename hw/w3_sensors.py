@@ -73,51 +73,54 @@ class Grayscale_Interpreter():
 
 class Controller():
     '''Class that controls the Picarx'''
-    def __init__(self, car, sensor, camera, scale=1.0):
+    def __init__(self, car, camera, scale=1.0):
         self.car = car
-        self.sensor = sensor
         self.angle = 5
         self.scale = scale
-        self.camera = camera
 
         self.car.set_camera_servo2_angle(-25)
 
-    def get_turn_angle(self):
+    def start_car(self):
         #Calculate turn angle
-        adc_list = self.car.get_adc_value()
-        maneuver_val = self.sensor.get_manuever_val(adc_list)
+        self.car.forward(30)
+
+    def stop_car(self):
+        self.car.stop()
+
+    def set_angle(self, maneuver_val):
+        """Follow the line using grey scale camera"""
         angle = self.scale*self.angle*maneuver_val
+        self.car.set_dir_servo_angle(angle)
 
-        return angle
-
-    def follow_line(self, duration):
+    def follow_line(self, duration, maneuver_val):
         """Follow the line using grey scale camera"""
         start_time = time.time()
         rel_time = 0
         prev_angle = 0
-
-        self.car.forward(30)
+ 
         while rel_time < duration:
-            angle = self.get_turn_angle()
+            angle = self.scale*self.angle*maneuver_val
             if angle != prev_angle:
                 self.car.set_dir_servo_angle(angle)
             
             prev_angle = angle
             time.sleep(0.5)
             rel_time = time.time() - start_time
-        self.car.stop()
 
     #FIXME: This is definitely still a WIP, it doesn't properly work yet.
     def follow_line_cv(self, duration):
         """Follow the line using computer vision"""
+        camera = PiCamera()
+        time.sleep(2) #let the camera warm up
+        
         rel_time = 0
-        self.camera.resolution= (640,480)
-        self.camera.framerate = 24
-        rawCapture = PiRGBArray(self.camera, size=self.camera.resolution)  
+        camera.resolution= (640,480)
+        camera.framerate = 24
+        rawCapture = PiRGBArray(camera, size=camera.resolution)  
 
         self.car.forward(30)
         start_time = time.time()
-        for frame in self.camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             #Repurpose lane lines to simply follow a line
             img = frame.array
             height, width, _ = img.shape
