@@ -87,7 +87,7 @@ def main(config):
         while rel_time < duration:
             time.sleep(1)
             rel_time = time.time() - start_time
-
+                    
     controller.stop_car()
 
 if __name__ == "__main__":
