@@ -1,4 +1,5 @@
 import sys
+from telnetlib import EC
 import time
 import logging
 import argparse
@@ -25,6 +26,8 @@ class Bus():
         self.message = None
 
     def read(self):
+        with self.lock.gen_rlock():
+            msg = self.message
         return self.message
 
     def write(self, message):
@@ -33,22 +36,25 @@ class Bus():
 
 def sensor_func(sensor_bus, sensor, delay_time):
     #Producer
-    adc_list = sensor.get_adc_value()
-    sensor_bus.write(adc_list)
-    time.sleep(delay_time)
+    while True:
+        adc_list = sensor.get_adc_value()
+        sensor_bus.write(adc_list)
+        time.sleep(delay_time)
 
 def interpretor_func(sensor_bus, interpretor_bus, interpretor, delay_time):
     #Consumer-Producer
-    adc_list = sensor_bus.read()
-    maneuver_val = interpretor.get_manuever_val(adc_list)
-    interpretor_bus.write(maneuver_val)
-    time.sleep(delay_time)
+    while True:
+        adc_list = sensor_bus.read()
+        maneuver_val = interpretor.get_manuever_val(adc_list)
+        interpretor_bus.write(maneuver_val)
+        time.sleep(delay_time)
 
 def controller_func(interpretor_bus, controller, delay_time):
     #Consumer
-    maneuver_val = interpretor_bus.read()
-    maneuver_val = controller.set_angle(maneuver_val)
-    time.sleep(delay_time)
+    while True:
+        maneuver_val = interpretor_bus.read()
+        maneuver_val = controller.set_angle(maneuver_val)
+        time.sleep(delay_time)
 
 
 def main(config):
@@ -67,9 +73,9 @@ def main(config):
 
     #Spin up futures to write to the busses
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor :
-        eSensor = executor.submit(sensor_func, sensor_bus , car, 1)
-        eInterpreter = executor.submit(interpretor_func, sensor_bus, interpretor_bus, interpretor, 1)
-        eController = executor.submit(controller_func, interpretor_bus, controller, 1)
+        eSensor = executor.submit(sensor_func, sensor_bus, car, 0.1)
+        eInterpreter = executor.submit(interpretor_func, sensor_bus, interpretor_bus, interpretor, 0.1)
+        eController = executor.submit(controller_func, interpretor_bus, controller, 0.1)
 
     #Use main thread for the controller to follow line
     start_time = time.time()
@@ -78,6 +84,9 @@ def main(config):
         time.sleep(1)
         rel_time = time.time() - start_time
                     
+    eSensor.result()
+    eInterpreter.result()
+    eController.result()
     controller.stop_car()
 
 if __name__ == "__main__":
