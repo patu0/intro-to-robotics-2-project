@@ -72,21 +72,22 @@ def main(config):
     controller.start_car()
 
     #Spin up futures to write to the busses
-    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor :
+    with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
         eSensor = executor.submit(sensor_func, sensor_bus, car, 0.1)
         eInterpreter = executor.submit(interpretor_func, sensor_bus, interpretor_bus, interpretor, 0.1)
         eController = executor.submit(controller_func, interpretor_bus, controller, 0.1)
 
-    #Use main thread for the controller to follow line
-    start_time = time.time()
-    rel_time = 0
-    while rel_time < duration:
-        time.sleep(1)
-        rel_time = time.time() - start_time
-                    
-    eSensor.result()
-    eInterpreter.result()
-    eController.result()
+        eSensor.result()
+        eInterpreter.result()
+        eController.result()
+
+        #Use main thread for the controller to follow line
+        start_time = time.time()
+        rel_time = 0
+        while rel_time < duration:
+            time.sleep(1)
+            rel_time = time.time() - start_time
+
     controller.stop_car()
 
 if __name__ == "__main__":
