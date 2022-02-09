@@ -1,9 +1,8 @@
 import time
 import logging
 import atexit
-import sys
 
-from logdecorator import log_on_start, log_on_end, log_on_error
+from logdecorator import log_on_error
 
 try :
     from servo import Servo 
@@ -11,7 +10,7 @@ try :
     from pin import Pin
     from adc import ADC
     from filedb import fileDB
-except (ImportError, PermissionError) as e :
+except Exception as e :
     print (" This computer does not appear to be a PiCar - X system \
         (ezblock is not present) . Shadowing hardware calls with substitute functions ")
     from sim_ezblock import *
@@ -106,9 +105,8 @@ class Picarx(object):
         # global dir_cal_value
         self.dir_current_angle = value
         angle_value  = value + self.dir_cal_value
+
         logging.debug("angle_value: {}".format(angle_value))
-        # logging.debug("set_dir_servo_angle_1:{}".format(angle_value))
-        # logging.debug("set_dir_servo_angle_2:{}".format(dir_cal_value))
         self.dir_servo_pin.angle(angle_value)
 
     def camera_servo1_angle_calibration(self,value):
@@ -195,7 +193,6 @@ class Picarx(object):
         logging.debug("Stopping motors")
         self.set_motor_speed(1, 0)
         self.set_motor_speed(2, 0)
-
 
     def Get_distance(self):
         timeout=0.01
