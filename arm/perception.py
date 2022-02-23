@@ -156,7 +156,7 @@ class Arm():
             self.center_list = []
             self.start_pick_up = True
 
-    def update_world_coord(self, roi):
+    def update_world_coord(self):
         img_centerx, img_centery = getCenter(self.rect, self.roi, self.size, square_length)
         self.world_x, self.world_y = convertCoordinate(img_centerx, img_centery, self.size)
         self.last_x, self.last_y = self.world_x, self.world_y
