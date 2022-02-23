@@ -327,7 +327,7 @@ def main(config):
         img = camera.frame
         if img is not None:
             frame = img.copy()
-            Frame = arm.identify_color(frame)           
+            Frame = arm.identify_single_color(frame)           
             cv2.imshow('Frame', Frame)
             key = cv2.waitKey(1)
             if key == 27:
