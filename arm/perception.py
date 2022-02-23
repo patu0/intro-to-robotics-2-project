@@ -192,8 +192,8 @@ class Arm():
                             color_area_max = i
                             areaMaxContour_max = areaMaxContour
             if max_area > 2500:  # 有找到最大面积
-                rect = cv2.minAreaRect(areaMaxContour_max)
-                box = np.int0(cv2.boxPoints(rect))
+                self.rect = cv2.minAreaRect(areaMaxContour_max)
+                box = np.int0(cv2.boxPoints(self.rect))
                 
                 self.roi = getROI(box)
                 self.get_roi = True
