@@ -43,7 +43,6 @@ class Arm():
         self.start_count_t1 = True
         self.move_square = False #TODO: Do we need this here?
         self.color_list = []
-        self.draw_color = 'None'
 
         self.__target_color = (color,)
         logging.debug("Set color: {}".format(self.__target_color))
@@ -83,7 +82,6 @@ class Arm():
         self.start_count_t1 = True
         self.move_square = False #TODO: Do we need this here?
         self.color_list = []
-        self.draw_color = 'None'
 
         #Set is_Running flag
         self.__isRunning = True
@@ -234,25 +232,20 @@ class Arm():
                         self.color_list = []
                         if color == 1:
                             self.detect_color = 'red'
-                            self.draw_color = self.range_rgb["red"]
                         elif color == 2:
                             self.detect_color = 'green'
-                            self.draw_color = self.range_rgb["green"]
                         elif color == 3:
                             self.detect_color = 'blue'
-                            self.draw_color = self.range_rgb["blue"]
                         else:
-                            self.detect_color = 'None'
-                            self.draw_color = self.range_rgb["black"]
+                            self.detect_color = 'black'
             else:
                 if not self.start_pick_up:
-                    self.draw_color = (0, 0, 0)
                     self.detect_color = "None"
         
         if self.move_square:
             cv2.putText(img, "Make sure no blocks in the stacking area", (15, int(img.shape[0]/2)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)    
         
-        cv2.putText(img, "Color: " + self.detect_color, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.65, self.range_rgb[self.draw_color], 2)
+        cv2.putText(img, "Color: " + self.detect_color, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.65, self.range_rgb[self.detect_color], 2)
         
         return img
         
