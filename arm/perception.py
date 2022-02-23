@@ -127,7 +127,7 @@ class Arm():
             Board.RGB.show()
 
     #TODO: Below here are the perception methods
-    def get_max_area(self, frame_lab):
+    def get_max_area(self, frame_lab, i):
         frame_mask = cv2.inRange(frame_lab, color_range[i][0], color_range[i][1])  # 对原图像和掩模进行位运算
         opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))  # 开运算
         closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))  # 闭运算
@@ -174,11 +174,10 @@ class Arm():
         frame_resize = cv2.resize(img_copy, self.size, interpolation=cv2.INTER_NEAREST)
         frame_gb = cv2.GaussianBlur(frame_resize, (11, 11), 11)
         if self.get_roi and not self.start_pick_up:
-            get_roi = False
+            self.get_roi = False
             frame_gb = getMaskROI(frame_gb, self.roi, self.size)    
         
         frame_lab = cv2.cvtColor(frame_gb, cv2.COLOR_BGR2LAB)  # 将图像转换到LAB空间
-
         color_area_max = None
         max_area = 0
         areaMaxContour_max = 0
@@ -186,7 +185,7 @@ class Arm():
         if not self.start_pick_up:
             for i in color_range:
                 if i in self.__target_color:
-                    areaMaxContour, area_max = self.get_max_area(frame_lab)
+                    areaMaxContour, area_max = self.get_max_area(frame_lab, i)
                     if areaMaxContour is not None:
                         if area_max > max_area:  # 找最大面积
                             max_area = area_max
@@ -274,7 +273,7 @@ class Arm():
             for i in color_range:
                 if i in self.__target_color:
                     self.detect_color = i
-                    areaMaxContour, area_max = self.get_max_area(frame_lab)
+                    areaMaxContour, area_max = self.get_max_area(frame_lab, i)
                     
                    
             if area_max > 2500:  # 有找到最大面积
