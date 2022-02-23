@@ -41,12 +41,12 @@ range_rgb = {
     'white': (255, 255, 255),
 }
 
-__target_color = ('red',)
+target_color = ('red',)
 def setTargetdetected_color(target_color):
-    global __target_color
+    global target_color
 
     print("tartget_color", target_color)
-    __target_color = target_color
+    target_color = target_color
     return (True, ())
 
 #找出面积最大的轮廓
@@ -96,7 +96,7 @@ def set_rgb(color):
 count = 0
 _stop = False
 get_roi = False
-__isRunning = False
+isRunning = False
 unreachable = False
 detect_color = 'None'
 start_pick_up = False
@@ -112,26 +112,26 @@ def reset():
     global start_count_t1
     global start_count_t2
     global start_count_t3
-    global __target_color, detect_color
+    global target_color, detect_color
 
     count = 0  
     _stop = False
     get_roi = False
-    __isRunning = False
+    isRunning = False
     unreachable = False
     detect_color = 'None'
     start_pick_up = False
     start_count_t1 = True
     start_count_t2 = True
     start_count_t3 = True
-    __target_color = ()
+    target_color = ()
     
 def init():
     print("ASRControl Init")
     initMove()
 
 def start():
-    global __isRunning
+    global isRunning
     reset()
     my_tts.TTSModuleSpeak("[h0][v10][m53]", "开始语音控制")
     print("ASRControl Start")
@@ -139,21 +139,21 @@ def start():
     my_asr.setMode(3)
     my_asr.setMode(2)
     my_asr.getResult()
-    __isRunning = True   
+    isRunning = True   
 
 def stop():
     global _stop
-    global __isRunning
+    global isRunning
     _stop = True
-    __isRunning = False
+    isRunning = False
     my_tts.TTSModuleSpeak("[h0][v10][m53]", "停止语音控制")
     print("ASRControl Stop")
 
 def exit():
     global _stop
-    global __isRunning
+    global isRunning
     _stop = True
-    __isRunning = False
+    isRunning = False
     print("ASRControl Exit")
 
 rect = None
@@ -165,7 +165,7 @@ def move():
     global rect
     global _stop
     global get_roi
-    global __isRunning
+    global isRunning
     global unreachable
     global detect_color
     global start_pick_up  
@@ -182,7 +182,7 @@ def move():
         'blue':  (-15 + 0.5, 0 - 0.5,  1.5),
     }
     while True:
-        if __isRunning:        
+        if isRunning:        
             if detect_color != 'None' and start_pick_up:  #如果检测到方块没有移动一段时间后，开始夹取
                 set_rgb(detect_color)
                 result = AK.setPitchRangeMoving((world_X, world_Y, 7), -90, -90, 0)  #移到目标位置，高度7cm
@@ -192,7 +192,7 @@ def move():
                     unreachable = False
                     time.sleep(result[2]/1000)
 
-                    if not __isRunning:
+                    if not isRunning:
                         continue
                     Board.setBusServoPulse(1, servo1 - 280, 500)  # 爪子张开
                     #计算夹持器需要旋转的角度
@@ -200,51 +200,51 @@ def move():
                     Board.setBusServoPulse(2, servo2_angle, 500)
                     time.sleep(0.5) 
 
-                    if not __isRunning:
+                    if not isRunning:
                         continue
                     AK.setPitchRangeMoving((world_X, world_Y, 2), -90, -90, 0, 1000)  #降低高度到2cm
                     time.sleep(1.5)
 
-                    if not __isRunning:
+                    if not isRunning:
                         continue
                     Board.setBusServoPulse(1, servo1, 500)  #夹持器闭合
                     time.sleep(1)
 
-                    if not __isRunning:
+                    if not isRunning:
                         continue
                     Board.setBusServoPulse(2, 500, 500)
                     AK.setPitchRangeMoving((world_X, world_Y, 12), -90, -90, 0, 1000)  #机械臂抬起
                     time.sleep(1)
 
-                    if not __isRunning:
+                    if not isRunning:
                         continue
                     #对不同颜色方块进行分类放置
                     result = AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], 12), -90, -90, 0)   
                     time.sleep(result[2]/1000)
                     Board.setBusServoPulse(2, 500, 500)
                     
-                    if not __isRunning:
+                    if not isRunning:
                         continue                   
                     servo2_angle = getAngle(coordinate[detect_color][0], coordinate[detect_color][1], -90)
                     Board.setBusServoPulse(2, servo2_angle, 500)
                     time.sleep(0.5)
                     
-                    if not __isRunning:
+                    if not isRunning:
                         continue
                     AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], coordinate[detect_color][2] + 3), -90, -90, 0, 500)
                     time.sleep(0.5)
                     
-                    if not __isRunning:
+                    if not isRunning:
                         continue                    
                     AK.setPitchRangeMoving((coordinate[detect_color]), -90, -90, 0, 1000)
                     time.sleep(0.8)
 
-                    if not __isRunning:
+                    if not isRunning:
                         continue
                     Board.setBusServoPulse(1, servo1 - 200, 500)  # 爪子张开  ，放下物体
                     time.sleep(0.8)
 
-                    if not __isRunning:
+                    if not isRunning:
                         continue
                     AK.setPitchRangeMoving((coordinate[detect_color][0], coordinate[detect_color][1], 12), -90, -90, 0, 800)
                     time.sleep(0.8)
@@ -289,12 +289,12 @@ def run(img):
     global t1, t2, t3
     global center_list
     global unreachable
-    global __isRunning
+    global isRunning
     global start_pick_up   
     global rotation_angle
     global last_x, last_y
     global world_X, world_Y 
-    global __target_color, detect_color  
+    global target_color, detect_color  
     global start_count_t1, start_count_t2, start_count_t3
 
     img_copy = img.copy()
@@ -302,7 +302,7 @@ def run(img):
     cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
     cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
 
-    if not __isRunning:
+    if not isRunning:
         return img
 
     frame_resize = cv2.resize(img_copy, size, interpolation=cv2.INTER_NEAREST)
@@ -317,22 +317,22 @@ def run(img):
     if data == 2:
         my_tts.TTSModuleSpeak("[h0][v10][m53]", "好的")
         start_count_t2 = True
-        __target_color = ('red',)
+        target_color = ('red',)
     elif data == 3:
         my_tts.TTSModuleSpeak("[h0][v10][m53]", "ok")
-        __target_color = ('green',)
+        target_color = ('green',)
         start_count_t2 = True
     elif data == 4:
         my_tts.TTSModuleSpeak("[h0][v10][m53]", "收到")
-        __target_color = ('blue',)
+        target_color = ('blue',)
         start_count_t2 = True
     elif data == 5:
         my_tts.TTSModuleSpeak("[h0][v10][m53]", "好的")
-        __target_color = ()
+        target_color = ()
 
     if not start_pick_up:
-        if __target_color != ():
-            detect_color = __target_color[0]
+        if target_color != ():
+            detect_color = target_color[0]
             frame_mask = cv2.inRange(frame_lab, color_range[detect_color][0], color_range[detect_color][1])  #对原图像和掩模进行位运算
             opened = cv2.morphologyEx(frame_mask, cv2.MORPH_OPEN, np.ones((6, 6), np.uint8))  # 开运算
             closed = cv2.morphologyEx(opened, cv2.MORPH_CLOSE, np.ones((6, 6), np.uint8))  # 闭运算
