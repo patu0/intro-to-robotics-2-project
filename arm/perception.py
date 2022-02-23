@@ -42,6 +42,8 @@ class Arm():
         self.start_pick_up = False
         self.start_count_t1 = True
         self.move_square = False #TODO: Do we need this here?
+        self.color_list = []
+        self.draw_color = 'None'
 
         self.__target_color = (color,)
         logging.debug("Set color: {}".format(self.__target_color))
@@ -79,7 +81,9 @@ class Arm():
         self.action_finish = True
         self.start_pick_up = False
         self.start_count_t1 = True
+        self.move_square = False #TODO: Do we need this here?
         self.color_list = []
+        self.draw_color = 'None'
 
         #Set is_Running flag
         self.__isRunning = True
