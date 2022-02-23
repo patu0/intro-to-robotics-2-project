@@ -190,6 +190,7 @@ class Arm():
                         if area_max > max_area:  # 找最大面积
                             max_area = area_max
                             color_area_max = i
+                            self.detect_color = i
                             areaMaxContour_max = areaMaxContour
             if max_area > 2500:  # 有找到最大面积
                 self.rect = cv2.minAreaRect(areaMaxContour_max)
