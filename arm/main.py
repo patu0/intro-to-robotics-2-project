@@ -56,6 +56,7 @@ def main(config):
         img = camera.frame
         if img is not None:
             frame = img.copy()
+            # print(type(frame))
             Frame = percept_func(frame)           
             cv2.imshow('Frame', Frame)
             key = cv2.waitKey(1)

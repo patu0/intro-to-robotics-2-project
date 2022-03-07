@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # coding=utf8
 import sys
+sys.path.append('/home/arm/.local/lib/python3.7/site-packages')
+import pytesseract
 sys.path.append('ArmPi/')
 
 import cv2
@@ -8,6 +10,8 @@ import time
 import math
 import logging
 import numpy as np
+# import pytesseract
+from PIL import Image
 from LABConfig import color_range
 from ArmIK.Transform import *
 from ArmIK.ArmMoveIK import *
@@ -74,8 +78,8 @@ class Perception():
     def identify_multiple_colors(self, img):    
         img_copy = img.copy()
         img_h, img_w = img.shape[:2]
-        cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
-        cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
+        # cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
+        # cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
 
         if not self.state.isRunning:
             return img
@@ -153,12 +157,20 @@ class Perception():
             cv2.putText(img, "Color: " + self.state.detect_color, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.65, self.state.range_rgb[self.state.detect_color], 2)
         
         return img
-        
+    def ocr_core(self,img):
+        """
+            This function 
+        """
+        text = pytesseract.image_to_string(Image.open(img))
+        print("Text:", text)
+
+
     def identify_single_color(self, img):
+        # print(img.shape)
         img_copy = img.copy()
         img_h, img_w = img.shape[:2]
-        cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
-        cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
+        # cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
+        # cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
         
         if not self.state.isRunning:
             return img
@@ -183,8 +195,10 @@ class Perception():
             if area_max > 2500:  # 有找到最大面积
                 self.state.rect = cv2.minAreaRect(areaMaxContour)
                 box = np.int0(cv2.boxPoints(self.state.rect))
+                # print(box)
 
                 self.state.roi = getROI(box)
+                print(self.state.roi)
                 self.state.get_roi = True
 
                 self.update_world_coord()
@@ -200,5 +214,33 @@ class Perception():
                         self.state.start_count_t1 = True
                         self.state.count = 0
                         self.state.center_list = []
+                x1 = self.state.roi[0]
+                x2 = self.state.roi[1]
+                y1 = self.state.roi[2]
+                y2 = self.state.roi[3]
+                #delete right
+                # truncated_img= np.delete(img,[y2,img.shape[1]],0) 
+                scale_factor = 15
+                truncated_img= np.delete(img,np.s_[x2-scale_factor:],1)
+                #delete bottom
+                truncated_img= np.delete(truncated_img,np.s_[y2-scale_factor:],0)
+                # delete top
+                truncated_img = np.delete(truncated_img, np.s_[:y1+scale_factor],0)
+                # delete left
+                truncated_img = np.delete(truncated_img, np.s_[:x1+scale_factor],1)
+                print("Shape of truncated image:", truncated_img.shape)
+                pic_pre_process = Image.fromarray(truncated_img)
+                pic_pre_process.save('frame_pre_process.png')
+
+                truncated_img = cv2.cvtColor(truncated_img, cv2.COLOR_BGR2GRAY)
+                pic_gray = Image.fromarray(truncated_img)
+                pic_gray.save('frame_gray.png')
+                norm_img = np.zeros((img.shape[0], img.shape[1]))
+                truncated_img = cv2.normalize(truncated_img, norm_img, 0, 255, cv2.NORM_MINMAX)
+                truncated_img = cv2.threshold(truncated_img, 100, 255, cv2.THRESH_BINARY)[1]
+                truncated_img = cv2.GaussianBlur(truncated_img, (1, 1), 0)
+                pic_post_process = Image.fromarray(truncated_img)
+                pic_post_process.save('frame_post_process.png')
+                self.ocr_core('frame_post_process.png')
         return img
     
