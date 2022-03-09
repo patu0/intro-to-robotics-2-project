@@ -105,21 +105,19 @@ class Move():
                         Board.setBusServoPulse(2, servo2_angle, 500)
                         time.sleep(0.5)
 
-                        if not self.state.isRunning:
+                        '''if not self.state.isRunning:
                             continue
                         # 对不同颜色方块进行分类放置
                         result = self.state.AK.setPitchRangeMoving(
                             (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90,
                             -90, 0)
                         time.sleep(result[2] / 1000)
-
                         if not self.state.isRunning:
                             continue
                         servo2_angle = getAngle(coordinate[self.state.detect_color][0],
                                                 coordinate[self.state.detect_color][1], -90)
                         Board.setBusServoPulse(2, servo2_angle, 500)
                         time.sleep(0.5)
-
                         if not self.state.isRunning:
                             continue
                         self.state.AK.setPitchRangeMoving((coordinate[self.state.detect_color][0],
@@ -127,23 +125,20 @@ class Move():
                                                            coordinate[self.state.detect_color][2] + 3), -90, -90, 0,
                                                           500)
                         time.sleep(0.5)
-
                         if not self.state.isRunning:
                             continue
                         self.state.AK.setPitchRangeMoving((coordinate[self.state.detect_color]), -90, -90, 0, 1000)
                         time.sleep(0.8)
-
                         if not self.state.isRunning:
                             continue
                         Board.setBusServoPulse(1, self.state.servo1 - 200, 500)
                         time.sleep(0.8)
-
                         if not self.state.isRunning:
                             continue
                         self.state.AK.setPitchRangeMoving(
                             (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90,
                             -90, 0, 800)
-                        time.sleep(0.8)
+                        time.sleep(0.8) '''
 
                         self.state.init()  # reset servos
                         time.sleep(1.5)
@@ -280,10 +275,10 @@ class Move():
 
         while True:
             if self.state.isRunning:
-                if self.state.detect_color != 'None' and self.state.start_pick_up:  # 如果检测到方块没有移动一段时间后，开始夹取
+                if self.state.detect_color != 'None' and self.state.start_pick_up:
                     self.set_rgb(self.state.detect_color)
                     self.setBuzzer(0.1)
-                    # 高度累加
+                    
                     z = z_r
                     z_r += dz
                     if z == 2 * dz + coordinate['red'][2]:
@@ -294,7 +289,7 @@ class Move():
                         self.state.move_square = False
 
                     result = self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 7), -90, -90,
-                                                               0)  # 移到目标位置，高度5cm
+                                                               0)  
                     if result == False:
                         self.state.unreachable = True
                     else:
@@ -303,16 +298,16 @@ class Move():
 
                         if not self.state.isRunning:
                             continue
-                        # 计算夹持器需要旋转的角度
+                        
                         servo2_angle = getAngle(self.state.world_X, self.state.world_Y, self.state.rotation_angle)
-                        Board.setBusServoPulse(1, self.state.servo1 - 280, 500)  # 爪子张开
+                        Board.setBusServoPulse(1, self.state.servo1 - 280, 500)  
                         Board.setBusServoPulse(2, servo2_angle, 500)
                         time.sleep(0.5)
 
                         if not self.state.isRunning:
                             continue
                         self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2), -90, -90, 0,
-                                                          1000)  # 降低高度到2cm
+                                                          1000)  # 2cm
                         time.sleep(1.5)
 
                         if not self.state.isRunning:
@@ -324,51 +319,30 @@ class Move():
                             continue
                         Board.setBusServoPulse(2, 500, 500)
                         self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 12), -90, -90, 0,
-                                                          1000)  # 机械臂抬起
+                                                          1000)  #
                         time.sleep(1)
 
-                        if not self.state.isRunning:
-                            continue
-                        self.state.AK.setPitchRangeMoving(
-                            (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90,
-                            -90, 0, 1500)
-                        time.sleep(1.5)
-
-                        if not self.state.isRunning:
-                            continue
-                        servo2_angle = getAngle(coordinate[self.state.detect_color][0],
-                                                coordinate[self.state.detect_color][1], -90)
-                        Board.setBusServoPulse(2, servo2_angle, 500)
-                        time.sleep(0.5)
-
-                        if not self.state.isRunning:
-                            continue
-                        self.state.AK.setPitchRangeMoving(
-                            (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], z + 3),
-                            -90, -90, 0, 500)
-                        time.sleep(0.5)
-
-                        if not self.state.isRunning:
-                            continue
-                        self.state.AK.setPitchRangeMoving(
-                            (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], z), -90,
-                            -90, 0, 1000)
-                        time.sleep(0.8)
-
-                        if not self.state.isRunning:
-                            continue
-                        Board.setBusServoPulse(1, self.state.servo1 - 200, 500)  # 爪子张开  ，放下物体
+                        
+                        servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 1
+                        Board.setBusServoPulse(2, 90, 500)
                         time.sleep(1)
-
+                        
+                        #servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 2
+                        #Board.setBusServoPulse(2, -90, 500)
+                        #time.sleep(1)
+                     
                         if not self.state.isRunning:
-                            continue
-                        self.state.AK.setPitchRangeMoving(
-                            (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90,
-                            -90, 0, 800)
+                            continue 
+                        self.state.AK.setPitchRangeMoving((0, 18, 5), -90, -90, 0, 800)   #place it in the middle
                         time.sleep(0.8)
+                        
+                        #if not self.state.isRunning:
+                            #continue
+                        #Board.setBusServoPulse(1, self.state.servo1, 500)  # gripper colsed
+                        #time.sleep(0.8)
 
-                        self.state.init()  # 回到初始位置
-                        time.sleep(1.5)
+                        #self.state.init() 
+                        #time.sleep(1.5)
 
                         self.state.detect_color = 'None'
                         self.state.get_roi = False
