@@ -15,7 +15,7 @@ def main(config):
 
     #Init arm and camera objects
     target_colors = ('red', 'green', 'blue')
-    shared_state = SharedState(target_colors, config.function)
+    shared_state = SharedState(target_colors, 3)
     shared_state.start()
 
     perception = Perception(shared_state)
