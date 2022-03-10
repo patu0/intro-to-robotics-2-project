@@ -24,7 +24,7 @@ def main(config):
     camera.camera_open()
 
     #Set up functions to use
-    move_func = move.rotate_block
+    move_func = move.flip_block
     percept_func = perception.identify_multiple_colors
 
     # Use the threads the same way original code did
