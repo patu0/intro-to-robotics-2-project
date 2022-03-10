@@ -101,29 +101,35 @@ class Flip():
                         Board.setBusServoPulse(1, self.state.servo1 - 280, 500)  
                         Board.setBusServoPulse(2, servo2_angle, 500)
                         time.sleep(0.5)
+                        logger.debug("\n\n\n")
 
                         if not self.state.isRunning:
                             continue
                         logger.debug("lower arm to 2cm")
                         self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2.5), -90, -90, 0, 1000)
                         time.sleep(1.5)
+                        logger.debug("\n\n\n")
 
                         if not self.state.isRunning:
                             continue
                         logger.debug("Close grippers")
                         Board.setBusServoPulse(1, self.state.servo1, 500)  # 夹持器闭合
                         time.sleep(0.8)
+                        logger.debug("\n\n\n")
 
                         if not self.state.isRunning:
                             continue
                         logger.debug("Moves up")
+                        logger.debug("\n\n\n")
                         # Board.setBusServoPulse(2, 500, 500)
-                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 10), -90, -90, 0, 1000)
+                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 5), -90, -90, 0, 1000)
                         time.sleep(1)
+                        logger.debug("\n\n\n")
 
                         logger.debug("Rotate block")
-                        Board.setBusServoPulse(3, 400, 500)
+                        Board.setBusServoPulse(3, 250, 500)
                         time.sleep(1)
+                        logger.debug("\n\n\n")
 
                         # Board.setBusServoPulse(5, 350, 500)
                         # time.sleep(1)
@@ -137,16 +143,19 @@ class Flip():
                         logger.debug("place block in middle")
                         self.state.AK.setPitchRangeMoving((0, 18, 0.5), -90, -90, 0, 1000)   #place it in the middle
                         time.sleep(0.8)
+                        logger.debug("\n\n\n")
 
                         if not self.state.isRunning:
                             continue 
                         logger.debug("open grippers")
                         Board.setBusServoPulse(1, self.state.servo1 - 200, 500)  # 爪子张开  ，放下物体
                         time.sleep(1)
+                        logger.debug("\n\n\n")
 
                         logger.debug("return to init state")
                         self.state.init() 
                         time.sleep(1.5)
+                        logger.debug("\n\n\n")
 
                         # self.move_block_to_middle()
 
