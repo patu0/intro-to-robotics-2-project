@@ -70,7 +70,7 @@ class Flip():
                         if not self.state.isRunning:
                             continue
                         logger.debug("lower arm to 2cm")
-                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2), -90, -90, 0, 1000)
+                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2.5), -90, -90, 0, 1000)
                         time.sleep(1.5)
 
                         if not self.state.isRunning:
@@ -82,14 +82,12 @@ class Flip():
                         if not self.state.isRunning:
                             continue
                         logger.debug("Moves up")
-                        Board.setBusServoPulse(2, 500, 500)
-                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 12), -90, -90, 0, 1000)
+                        # Board.setBusServoPulse(2, 500, 500)
+                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 10), -90, -90, 0, 1000)
                         time.sleep(1)
 
                         logger.debug("Rotate block")
-                        servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 30)
-                        logger.debug("Angle: {}".format(servo2_angle))
-                        Board.setBusServoPulse(2, servo2_angle, 500)
+                        Board.setBusServoPulse(2, 250, 500)
                         time.sleep(1)
                         
                         #servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 2
@@ -99,7 +97,7 @@ class Flip():
                         if not self.state.isRunning:
                             continue 
                         logger.debug("place block in middle")
-                        self.state.AK.setPitchRangeMoving((0, 18, 2), -90, -90, 0, 1000)   #place it in the middle
+                        self.state.AK.setPitchRangeMoving((0, 18, 0.5), -90, -90, 0, 1000)   #place it in the middle
                         time.sleep(0.8)
 
                         if not self.state.isRunning:
