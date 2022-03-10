@@ -15,7 +15,7 @@ def main(config):
 
     #Init arm and camera objects
     target_colors = ('red', 'green', 'blue')
-    shared_state = SharedState(target_colors, config.function)
+    shared_state = SharedState(target_colors, 3)
     shared_state.start()
 
     perception = Perception(shared_state)
@@ -26,8 +26,8 @@ def main(config):
     #Set up functions to use
     move_func = move.rotate_block
     percept_func = perception.identify_single_color
-    if config.function != "1":
-        percept_func = perception.identify_multiple_colors
+    # if config.function != "1":
+    #     percept_func = perception.identify_multiple_colors
 
     # Use the threads the same way original code did
     # they share too much information to quickly integrate
