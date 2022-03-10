@@ -111,8 +111,8 @@ def getCenter(rect, roi, size, square_length):
 
     return  x, y
 
-# 获取旋转的角度
-# 参数：机械臂末端坐标, 木块旋转角
+# Get the angle of rotation
+# Parameters: the coordinates of the end of the robot arm, the rotation angle of the wooden block
 def getAngle(x, y, angle):
     theta6 = round(math.degrees(math.atan2(abs(x), abs(y))), 1)
     angle = abs(angle)
