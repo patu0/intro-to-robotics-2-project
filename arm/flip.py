@@ -127,7 +127,9 @@ class Flip():
                         logger.debug("\n\n\n")
 
                         logger.debug("Rotate block")
-                        Board.setBusServoPulse(3, 400, 500)
+                        Board.setBusServoPulse(3, 250, 500)
+                        time.sleep(1)
+                        Board.setBusServoPulse(5, 250, 500)
                         time.sleep(1)
                         logger.debug("\n\n\n")
 
