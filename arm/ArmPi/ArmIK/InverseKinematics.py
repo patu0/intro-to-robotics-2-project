@@ -73,13 +73,13 @@ class IK:
             # logger.debug('高度低于0, CF(%s)<l1(%s)', CF, -self.l1)
             return False
         if self.l2 + self.l3 < round(AC, 4): #两边之和小于第三边
-            logger.debug('不能构成连杆结构, l2(%s) + l3(%s) < AC(%s)', self.l2, self.l3, AC)
+            # logger.debug('不能构成连杆结构, l2(%s) + l3(%s) < AC(%s)', self.l2, self.l3, AC)
             return False
 
         #求theat4
         cos_ABC = round(-(pow(AC, 2)- pow(self.l2, 2) - pow(self.l3, 2))/(2*self.l2*self.l3), 4) #余弦定理
         if abs(cos_ABC) > 1:
-            logger.debug('不能构成连杆结构, abs(cos_ABC(%s)) > 1', cos_ABC)
+            # logger.debug('不能构成连杆结构, abs(cos_ABC(%s)) > 1', cos_ABC)
             return False
         ABC = acos(cos_ABC) #反三角算出弧度
         theta4 = 180.0 - degrees(ABC)
@@ -88,7 +88,7 @@ class IK:
         CAF = acos(AF / AC)
         cos_BAC = round((pow(AC, 2) + pow(self.l2, 2) - pow(self.l3, 2))/(2*self.l2*AC), 4) #余弦定理
         if abs(cos_BAC) > 1:
-            logger.debug('不能构成连杆结构, abs(cos_BAC(%s)) > 1', cos_BAC)
+            # logger.debug('不能构成连杆结构, abs(cos_BAC(%s)) > 1', cos_BAC)
             return False
         if CF < 0:
             zf_flag = -1

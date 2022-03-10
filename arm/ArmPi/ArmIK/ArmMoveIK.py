@@ -42,7 +42,7 @@ class ArmIK:
         #将逆运动学算出的角度转换为舵机对应的脉宽值
         servo3 = int(round(theta3 * self.servo3Param + (self.servo3Range[1] + self.servo3Range[0])/2))
         if servo3 > self.servo3Range[1] or servo3 < self.servo3Range[0] + 60:
-            logger.info('servo3(%s)超出范围(%s, %s)', servo3, self.servo3Range[0] + 60, self.servo3Range[1])
+            # logger.info('servo3(%s)超出范围(%s, %s)', servo3, self.servo3Range[0] + 60, self.servo3Range[1])
             return False
 
         servo4 = int(round(theta4 * self.servo4Param + (self.servo4Range[1] + self.servo4Range[0])/2))

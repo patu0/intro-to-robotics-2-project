@@ -88,6 +88,7 @@ class Flip():
 
                         logger.debug("Rotate block")
                         servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 30)
+                        logger.debug("Angle: {}".format(servo2_angle))
                         Board.setBusServoPulse(2, servo2_angle, 500)
                         time.sleep(1)
                         
