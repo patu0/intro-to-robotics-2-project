@@ -3,7 +3,7 @@ import logging
 import argparse
 import threading
 
-from move import Move
+from flip import Move
 from camera import Camera
 from perception import Perception
 from shared_state import SharedState
