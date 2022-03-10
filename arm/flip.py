@@ -124,6 +124,9 @@ class Flip():
                         logger.debug("Rotate block")
                         Board.setBusServoPulse(3, 350, 500)
                         time.sleep(1)
+
+                        Board.setBusServoPulse(5, 350, 500)
+                        time.sleep(1)
                         
                         #servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 2
                         #Board.setBusServoPulse(2, -90, 500)
@@ -145,7 +148,7 @@ class Flip():
                         self.state.init() 
                         time.sleep(1.5)
 
-                        self.move_block_to_middle()
+                        # self.move_block_to_middle()
 
                         self.state.detect_color = 'None'
                         self.state.get_roi = False
