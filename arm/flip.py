@@ -119,10 +119,23 @@ class Flip():
                         logger.debug("place block in middle")
                         self.state.AK.setPitchRangeMoving((0, 18, 5), -90, -90, 0, 800)   #place it in the middle
                         time.sleep(0.8)
-                        
 
+                        if not self.state.isRunning:
+                            continue 
+                        logger.debug("open grippers")
+                        Board.setBusServoPulse(1, self.state.servo1 - 200, 500)  # 爪子张开  ，放下物体
+                        time.sleep(1)
+
+                        if not self.state.isRunning:
+                            continue 
+                        logger.debug("???")
+                        self.state.AK.setPitchRangeMoving((coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90, -90, 0, 800)
+                        time.sleep(0.8)
+
+                        logger.debug("return to init state")
                         self.state.init() 
                         time.sleep(1.5)
+
 
                         self.state.detect_color = 'None'
                         self.state.get_roi = False

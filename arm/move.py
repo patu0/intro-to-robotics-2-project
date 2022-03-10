@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 # coding=utf8
+from asyncio.log import logger
 import time
 import sys
 sys.path.append('ArmPi/')
@@ -321,6 +322,7 @@ class Move():
 
                         if not self.state.isRunning:
                             continue 
+                        logger.debug("open grippers")
                         Board.setBusServoPulse(1, self.state.servo1 - 200, 500)  # 爪子张开  ，放下物体
                         time.sleep(1)
 
@@ -329,7 +331,8 @@ class Move():
                         self.state.AK.setPitchRangeMoving((coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90, -90, 0, 800)
                         time.sleep(0.8)
 
-                        self.state.init()  # 回到初始位置
+                        logger.debug("return to init state")
+                        self.state.init() 
                         time.sleep(1.5)
 
                         self.state.detect_color = 'None'
