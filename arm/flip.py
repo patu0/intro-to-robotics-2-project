@@ -51,7 +51,7 @@ class Flip():
         time.sleep(0.5)
 
         # logger.debug("lower arm to 2cm")
-        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2), -90, -90, 0, 1000)
+        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2), -90, -90, 0, 100)
         time.sleep(1.5)
 
         # logger.debug("Close grippers")
@@ -105,7 +105,7 @@ class Flip():
                         if not self.state.isRunning:
                             continue
                         logger.debug("lower arm to 2cm")
-                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2.5), -90, -90, 0, 1000)
+                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2.75), -90, -90, 0, 1000)
                         time.sleep(1.5)
 
                         if not self.state.isRunning:
@@ -122,7 +122,7 @@ class Flip():
                         time.sleep(1)
 
                         logger.debug("Rotate block")
-                        Board.setBusServoPulse(3, 300, 500)
+                        Board.setBusServoPulse(3, 350, 500)
                         time.sleep(1)
                         
                         #servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 2
