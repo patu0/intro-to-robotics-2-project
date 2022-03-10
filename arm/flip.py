@@ -110,7 +110,7 @@ class Flip():
 
                         if not self.state.isRunning:
                             continue
-                        logger.debug("???")
+                        logger.debug("Move to stacking location")
                         self.state.AK.setPitchRangeMoving(
                             (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90,
                             -90, 0, 1500)
@@ -119,7 +119,7 @@ class Flip():
                         if not self.state.isRunning:
                             continue
 
-                        logger.debug("???")
+                        logger.debug("Move to correct height?")
                         servo2_angle = getAngle(coordinate[self.state.detect_color][0],
                                                 coordinate[self.state.detect_color][1], -90)
                         Board.setBusServoPulse(2, servo2_angle, 500)
@@ -127,7 +127,7 @@ class Flip():
 
                         if not self.state.isRunning:
                             continue
-                        logger.debug("???")
+                        logger.debug("Move to correct height?")
                         self.state.AK.setPitchRangeMoving(
                             (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], z + 3),
                             -90, -90, 0, 500)
@@ -135,7 +135,7 @@ class Flip():
 
                         if not self.state.isRunning:
                             continue
-                        logger.debug("???")
+                        logger.debug("move down a little bit more?")
                         self.state.AK.setPitchRangeMoving(
                             (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], z), -90,
                             -90, 0, 1000)
