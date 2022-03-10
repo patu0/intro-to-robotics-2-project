@@ -58,7 +58,7 @@ class Perception():
         if self.state.start_count_t1:
             self.state.start_count_t1 = False
             self.state.t1 = time.time()
-        if time.time() - self.state.t1 > 1.5:
+        if time.time() - self.state.t1 > 1.0:
             self.state.rotation_angle = self.state.rect[2]
             self.state.start_count_t1 = True
             self.state.world_X, self.state.world_Y = np.mean(np.array(self.state.center_list).reshape(self.state.count, 2), axis=0)

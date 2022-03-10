@@ -329,7 +329,7 @@ class Move():
                         self.state.AK.setPitchRangeMoving((coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90, -90, 0, 800)
                         time.sleep(0.8)
 
-                        self.state.init()  # 回到初始位置
+                        self.state.init() 
                         time.sleep(1.5)
 
                         self.state.detect_color = 'None'

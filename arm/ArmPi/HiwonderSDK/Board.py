@@ -151,10 +151,10 @@ def getBusServoID(id=None):
 
 def setBusServoPulse(id, pulse, use_time):
     """
-    驱动串口舵机转到指定位置
-    :param id: 要驱动的舵机id
-    :pulse: 位置
-    :use_time: 转动需要的时间
+    Drive the serial servo to the specified position
+    :param id: the id of the servo to drive
+    :pulse: position
+    :use_time: time needed to rotate
     """
 
     pulse = 0 if pulse < 0 else pulse
