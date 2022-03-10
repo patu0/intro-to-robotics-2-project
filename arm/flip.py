@@ -56,11 +56,10 @@ class Flip():
 
         while True:
             if self.state.isRunning:
-                #If it is detected that the block has not moved, start the gripping
-                if self.state.detect_color != 'None' and self.state.start_pick_up: 
+                if self.state.detect_color != 'None' and self.state.start_pick_up:
                     self.set_rgb(self.state.detect_color)
                     self.setBuzzer(0.1)
-                    # height accumulation?
+                    
                     z = z_r
                     z_r += dz
                     if z == 2 * dz + coordinate['red'][2]:
@@ -69,10 +68,9 @@ class Flip():
                         self.state.move_square = True
                         time.sleep(3)
                         self.state.move_square = False
-                    
-                    #Move to the target position, height 5cm
-                    result = self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 7), -90, -90, 0)  
 
+                    result = self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 7), -90, -90,
+                                                               0)  
                     if result == False:
                         self.state.unreachable = True
                     else:
@@ -81,81 +79,49 @@ class Flip():
 
                         if not self.state.isRunning:
                             continue
-                        # Calculate rotation angle and 
+                        
+                        logger.debug("???")
                         servo2_angle = getAngle(self.state.world_X, self.state.world_Y, self.state.rotation_angle)
-
-                        logger.debug("open grippers")
-                        Board.setBusServoPulse(1, self.state.servo1 - 280, 500)  # Open grippers
+                        Board.setBusServoPulse(1, self.state.servo1 - 280, 500)  
                         Board.setBusServoPulse(2, servo2_angle, 500)
                         time.sleep(0.5)
 
                         if not self.state.isRunning:
                             continue
-                        logger.debug("lower to height of 2 cm")
-                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2), -90, -90, 0, 1000)  # lower the height to 2cm
+                        logger.debug("lower arm to 2cm")
+                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2), -90, -90, 0, 1000)
                         time.sleep(1.5)
 
                         if not self.state.isRunning:
                             continue
-                        logger.debug("close gripper")
-                        Board.setBusServoPulse(1, self.state.servo1, 500)  # gripper closed
+                        logger.debug("open grippers")
+                        Board.setBusServoPulse(1, self.state.servo1, 500)  # 夹持器闭合
                         time.sleep(0.8)
 
                         if not self.state.isRunning:
                             continue
-                        logger.debug("raise arm")
                         Board.setBusServoPulse(2, 500, 500)
-                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 12), -90, -90, 0, 1000)  # robotic arm is raised
+                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 12), -90, -90, 0,
+                                                          1000)  #
                         time.sleep(1)
 
-                        if not self.state.isRunning:
-                            continue
-                        logger.debug("Move to stacking location")
-                        self.state.AK.setPitchRangeMoving(
-                            (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90,
-                            -90, 0, 1500)
-                        time.sleep(5)
-
-                        if not self.state.isRunning:
-                            continue
-
-                        logger.debug("Move to correct height?")
-                        servo2_angle = getAngle(coordinate[self.state.detect_color][0],
-                                                coordinate[self.state.detect_color][1], -90)
-                        Board.setBusServoPulse(2, servo2_angle, 500)
-                        time.sleep(5)
-
-                        if not self.state.isRunning:
-                            continue
-                        logger.debug("Move to correct height?")
-                        self.state.AK.setPitchRangeMoving(
-                            (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], z + 3),
-                            -90, -90, 0, 500)
-                        time.sleep(5)
-
-                        if not self.state.isRunning:
-                            continue
-                        logger.debug("move down a little bit more?")
-                        self.state.AK.setPitchRangeMoving(
-                            (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], z), -90,
-                            -90, 0, 1000)
-                        time.sleep(5)
-
-                        if not self.state.isRunning:
-                            continue
-                        logger.debug("Open grippers and drop object")
-                        Board.setBusServoPulse(1, self.state.servo1 - 200, 500)  # Claws open to drop objects
+                        logger.debug("flip block")
+                        servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 1
+                        Board.setBusServoPulse(2, 90, 500)
                         time.sleep(1)
-
+                        
+                        #servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 2
+                        #Board.setBusServoPulse(2, -90, 500)
+                        #time.sleep(1)
+                     
                         if not self.state.isRunning:
-                            continue
-                        self.state.AK.setPitchRangeMoving(
-                            (coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90,
-                            -90, 0, 800)
+                            continue 
+                        logger.debug("place block in middle")
+                        self.state.AK.setPitchRangeMoving((0, 18, 5), -90, -90, 0, 800)   #place it in the middle
                         time.sleep(0.8)
+                        
 
-                        logger.debug("return to original position")
-                        self.state.init()  # return to original position
+                        self.state.init() 
                         time.sleep(1.5)
 
                         self.state.detect_color = 'None'
