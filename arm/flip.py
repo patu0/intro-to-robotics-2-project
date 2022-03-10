@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 # coding=utf8
-from asyncio.log import logger
+import logging
 import time
 import sys
 
@@ -10,11 +10,10 @@ from ArmIK.Transform import *
 from ArmIK.ArmMoveIK import *
 import HiwonderSDK.Board as Board
 from CameraCalibration.CalibrationConfig import *
-import logging
-
 
 logging_format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=logging_format, level=logging.ERROR , datefmt="%H:%M:%S ")
+logger = logging.getLogger(__name__)
 
 class Flip():
     def __init__(self, shared_state):
@@ -46,29 +45,11 @@ class Flip():
 
     def rotate_block(self):
         '''Rotate block'''
-        coordinate = {
-            'red': (-15 + 1, -7 - 0.5, 1.5),
-            'green': (-15 + 1, -7 - 0.5, 1.5),
-            'blue': (-15 + 1, -7 - 0.5, 1.5),
-        }
-        dz = 2.5
-        z_r = coordinate['red'][2]
-
         while True:
             if self.state.isRunning:
                 if self.state.detect_color != 'None' and self.state.start_pick_up:
                     self.set_rgb(self.state.detect_color)
-                    self.setBuzzer(0.1)
-                    
-                    z = z_r
-                    z_r += dz
-                    if z == 2 * dz + coordinate['red'][2]:
-                        z_r = coordinate['red'][2]
-                    if z == coordinate['red'][2]:
-                        self.state.move_square = True
-                        time.sleep(3)
-                        self.state.move_square = False
-
+                    self.setBuzzer(0.1)        
                     result = self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 7), -90, -90,
                                                                0)  
                     if result == False:
@@ -80,7 +61,7 @@ class Flip():
                         if not self.state.isRunning:
                             continue
                         
-                        logger.debug("???")
+                        logger.debug("Reset servos?")
                         servo2_angle = getAngle(self.state.world_X, self.state.world_Y, self.state.rotation_angle)
                         Board.setBusServoPulse(1, self.state.servo1 - 280, 500)  
                         Board.setBusServoPulse(2, servo2_angle, 500)
@@ -100,14 +81,14 @@ class Flip():
 
                         if not self.state.isRunning:
                             continue
+                        logger.debug("???")
                         Board.setBusServoPulse(2, 500, 500)
-                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 12), -90, -90, 0,
-                                                          1000)  #
+                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 12), -90, -90, 0, 1000)
                         time.sleep(1)
 
                         logger.debug("flip block")
                         servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 1
-                        Board.setBusServoPulse(2, 90, 500)
+                        Board.setBusServoPulse(2, 60, 500)
                         time.sleep(1)
                         
                         #servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 2
@@ -125,12 +106,6 @@ class Flip():
                         logger.debug("open grippers")
                         Board.setBusServoPulse(1, self.state.servo1 - 200, 500)  # 爪子张开  ，放下物体
                         time.sleep(1)
-
-                        if not self.state.isRunning:
-                            continue 
-                        logger.debug("???")
-                        self.state.AK.setPitchRangeMoving((coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90, -90, 0, 800)
-                        time.sleep(0.8)
 
                         logger.debug("return to init state")
                         self.state.init() 
