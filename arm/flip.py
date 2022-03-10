@@ -43,7 +43,42 @@ class Flip():
             Board.RGB.setPixelColor(1, Board.PixelColor(0, 0, 0))
             Board.RGB.show()
 
-    def rotate_block(self):
+    def move_block_to_middle(self):
+        logger.debug("Move into position, open grippers")
+        servo2_angle = getAngle(self.state.world_X, self.state.world_Y, self.state.rotation_angle)
+        Board.setBusServoPulse(1, self.state.servo1 - 280, 500)  
+        Board.setBusServoPulse(2, servo2_angle, 500)
+        time.sleep(0.5)
+
+        # logger.debug("lower arm to 2cm")
+        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2), -90, -90, 0, 1000)
+        time.sleep(1.5)
+
+        # logger.debug("Close grippers")
+        Board.setBusServoPulse(1, self.state.servo1, 500)  # 夹持器闭合
+        time.sleep(0.8)
+
+        # logger.debug("Moves up")
+        Board.setBusServoPulse(2, 500, 500)
+        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 10), -90, -90, 0, 1000)
+        time.sleep(1)
+
+        #servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 2
+        #Board.setBusServoPulse(2, -90, 500)
+        #time.sleep(1)
+        
+        #Place it in the middle
+        self.state.AK.setPitchRangeMoving((0, 18, 2), -90, -90, 0, 1000)   #place it in the middle
+        time.sleep(0.8)
+
+        #Return to initial position
+        Board.setBusServoPulse(1, self.state.servo1 - 200, 500)  # 爪子张开  ，放下物体
+        time.sleep(1)
+
+        self.state.init() 
+        time.sleep(1.5)
+
+    def flip_block(self):
         '''Rotate block'''
         while True:
             if self.state.isRunning:
@@ -87,7 +122,7 @@ class Flip():
                         time.sleep(1)
 
                         logger.debug("Rotate block")
-                        Board.setBusServoPulse(2, 250, 500)
+                        Board.setBusServoPulse(2, 90, 500)
                         time.sleep(1)
                         
                         #servo2_angle = getAngle(self.state.world_X, self.state.world_Y, 200)    # flip block  FLIP 2
@@ -110,6 +145,7 @@ class Flip():
                         self.state.init() 
                         time.sleep(1.5)
 
+                        self.move_block_to_middle()
 
                         self.state.detect_color = 'None'
                         self.state.get_roi = False
