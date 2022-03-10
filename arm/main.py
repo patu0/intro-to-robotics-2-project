@@ -25,9 +25,7 @@ def main(config):
 
     #Set up functions to use
     move_func = move.rotate_block
-    percept_func = perception.identify_single_color
-    # if config.function != "1":
-    #     percept_func = perception.identify_multiple_colors
+    percept_func = perception.identify_multiple_colors
 
     # Use the threads the same way original code did
     # they share too much information to quickly integrate

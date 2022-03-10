@@ -45,7 +45,7 @@ class Flip():
             Board.RGB.show()
 
     def rotate_block(self):
-        '''Stack blocks'''
+        '''Rotate block'''
         coordinate = {
             'red': (-15 + 1, -7 - 0.5, 1.5),
             'green': (-15 + 1, -7 - 0.5, 1.5),
@@ -56,10 +56,11 @@ class Flip():
 
         while True:
             if self.state.isRunning:
-                if self.state.detect_color != 'None' and self.state.start_pick_up:  # 如果检测到方块没有移动一段时间后，开始夹取
+                #If it is detected that the block has not moved, start the gripping
+                if self.state.detect_color != 'None' and self.state.start_pick_up: 
                     self.set_rgb(self.state.detect_color)
                     self.setBuzzer(0.1)
-                    # 高度累加
+                    # height accumulation?
                     z = z_r
                     z_r += dz
                     if z == 2 * dz + coordinate['red'][2]:
@@ -68,9 +69,10 @@ class Flip():
                         self.state.move_square = True
                         time.sleep(3)
                         self.state.move_square = False
+                    
+                    #Move to the target position, height 5cm
+                    result = self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 7), -90, -90, 0)  
 
-                    result = self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 7), -90, -90,
-                                                               0)  # 移到目标位置，高度5cm
                     if result == False:
                         self.state.unreachable = True
                     else:
@@ -90,8 +92,7 @@ class Flip():
                         if not self.state.isRunning:
                             continue
                         logger.debug("lower to height of 2 cm")
-                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2), -90, -90, 0,
-                                                          1000)  # lower the height to 2cm
+                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 2), -90, -90, 0, 1000)  # lower the height to 2cm
                         time.sleep(1.5)
 
                         if not self.state.isRunning:
@@ -104,8 +105,7 @@ class Flip():
                             continue
                         logger.debug("raise arm")
                         Board.setBusServoPulse(2, 500, 500)
-                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 12), -90, -90, 0,
-                                                          1000)  # robotic arm is raised
+                        self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 12), -90, -90, 0, 1000)  # robotic arm is raised
                         time.sleep(1)
 
                         if not self.state.isRunning:
