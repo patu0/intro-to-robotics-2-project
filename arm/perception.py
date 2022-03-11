@@ -24,6 +24,9 @@ logging.basicConfig(format=logging_format, level=logging.ERROR , datefmt="%H:%M:
 class Perception():
     def __init__(self, shared_state):
         self.state = shared_state
+
+        self.target_word = "ACTING"
+        self.target_word_split = [self.target_word[index : index + 2] for index in range(0, len(self.target_word), 2)]
         
 
     def getAreaMaxContour(self, contours):
@@ -69,6 +72,7 @@ class Perception():
             self.state.count = 0
             self.state.center_list = []
             self.state.start_pick_up = True
+            
 
     def update_world_coord(self):
         img_centerx, img_centery = getCenter(self.state.rect, self.state.roi, self.state.size, square_length)
@@ -78,8 +82,8 @@ class Perception():
     def identify_multiple_colors(self, img):    
         img_copy = img.copy()
         img_h, img_w = img.shape[:2]
-        # cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
-        # cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
+        cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
+        cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
 
         if not self.state.isRunning:
             return img
@@ -161,11 +165,47 @@ class Perception():
         """
             This function 
         """
-        text = pytesseract.image_to_string(Image.open(img))
-        print("Text:", text)
+        return pytesseract.image_to_string(Image.open(img))
+
+    def letters_identified(self,img):
+        x1 = self.state.roi[0]
+        x2 = self.state.roi[1]
+        y1 = self.state.roi[2]
+        y2 = self.state.roi[3]
+        scale_factor = 15
+        #crop right,bottom,top,left
+        truncated_img= np.delete(img,np.s_[x2-scale_factor:],1)
+        truncated_img= np.delete(truncated_img,np.s_[y2-scale_factor:],0)
+        truncated_img = np.delete(truncated_img, np.s_[:y1+scale_factor],0)
+        truncated_img = np.delete(truncated_img, np.s_[:x1+scale_factor],1)
+
+        print("Shape of truncated image:", truncated_img.shape)
+        pic_pre_process = Image.fromarray(truncated_img)
+        pic_pre_process.save('frame_pre_process.png')
+
+        truncated_img = cv2.cvtColor(truncated_img, cv2.COLOR_BGR2GRAY)
+        pic_gray = Image.fromarray(truncated_img)
+        pic_gray.save('frame_gray.png')
+        norm_img = np.zeros((img.shape[0], img.shape[1]))
+        truncated_img = cv2.normalize(truncated_img, norm_img, 0, 255, cv2.NORM_MINMAX)
+        truncated_img = cv2.threshold(truncated_img, 100, 255, cv2.THRESH_BINARY)[1]
+        truncated_img = cv2.GaussianBlur(truncated_img, (1, 1), 0)
+
+        pic_post_process = Image.fromarray(truncated_img)
+        pic_post_process.save('frame_post_process.png')
+        text = self.ocr_core('frame_post_process.png')
+        text = text[:2]
+        print("Target:", self.target_word_split[self.state.word_section_ind])
+        print("Text Identified:", text)
+        if text == self.target_word_split[self.state.word_section_ind]:
+            return True
+        else:
+            return False
+        
 
 
     def identify_single_color(self, img):
+        print('======================')
         # print(img.shape)
         img_copy = img.copy()
         img_h, img_w = img.shape[:2]
@@ -190,8 +230,6 @@ class Perception():
                 if i in self.state.target_color:
                     self.state.detect_color = i
                     areaMaxContour, area_max = self.get_max_area(frame_lab, i)
-                    
-                   
             if area_max > 2500:  # 有找到最大面积
                 self.state.rect = cv2.minAreaRect(areaMaxContour)
                 box = np.int0(cv2.boxPoints(self.state.rect))
@@ -207,40 +245,15 @@ class Perception():
                 img, distance = self.draw_box(box, img)
 
                 if self.state.action_finish:
-                    if distance < 0.3:
+                    if distance < 0.3 and self.letters_identified(img):
                         self.update_state()
                     else:
                         self.state.t1 = time.time()
                         self.state.start_count_t1 = True
                         self.state.count = 0
                         self.state.center_list = []
-                x1 = self.state.roi[0]
-                x2 = self.state.roi[1]
-                y1 = self.state.roi[2]
-                y2 = self.state.roi[3]
-                #delete right
-                # truncated_img= np.delete(img,[y2,img.shape[1]],0) 
-                scale_factor = 15
-                truncated_img= np.delete(img,np.s_[x2-scale_factor:],1)
-                #delete bottom
-                truncated_img= np.delete(truncated_img,np.s_[y2-scale_factor:],0)
-                # delete top
-                truncated_img = np.delete(truncated_img, np.s_[:y1+scale_factor],0)
-                # delete left
-                truncated_img = np.delete(truncated_img, np.s_[:x1+scale_factor],1)
-                print("Shape of truncated image:", truncated_img.shape)
-                pic_pre_process = Image.fromarray(truncated_img)
-                pic_pre_process.save('frame_pre_process.png')
-
-                truncated_img = cv2.cvtColor(truncated_img, cv2.COLOR_BGR2GRAY)
-                pic_gray = Image.fromarray(truncated_img)
-                pic_gray.save('frame_gray.png')
-                norm_img = np.zeros((img.shape[0], img.shape[1]))
-                truncated_img = cv2.normalize(truncated_img, norm_img, 0, 255, cv2.NORM_MINMAX)
-                truncated_img = cv2.threshold(truncated_img, 100, 255, cv2.THRESH_BINARY)[1]
-                truncated_img = cv2.GaussianBlur(truncated_img, (1, 1), 0)
-                pic_post_process = Image.fromarray(truncated_img)
-                pic_post_process.save('frame_post_process.png')
-                self.ocr_core('frame_post_process.png')
+                
+                
+                
         return img
-    
+
