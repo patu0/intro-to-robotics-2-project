@@ -12,7 +12,7 @@ from CameraCalibration.CalibrationConfig import *
 
 class SharedState():
     '''Container class to share information between Move and Perception class'''
-    def __init__(self, target_colors, multi_color_flag) -> None:
+    def __init__(self, target_colors):
         self.AK = ArmIK()
         self.range_rgb = {
             'red': (0, 0, 255),
@@ -37,8 +37,6 @@ class SharedState():
         self.word_section_ind = 0
 
         self.target_color = target_colors
-        if int(multi_color_flag) <= 1:
-            self.target_color = [self.target_color[0]]
         logging.debug("Set color: {}".format(self.target_color))
 
         self.servo1 = 500
