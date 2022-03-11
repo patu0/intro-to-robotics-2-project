@@ -161,11 +161,7 @@ class Perception():
             cv2.putText(img, "Color: " + self.state.detect_color, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.65, self.state.range_rgb[self.state.detect_color], 2)
         
         return img
-    def ocr_core(self,img):
-        """
-            This function 
-        """
-        return pytesseract.image_to_string(Image.open(img))
+
 
     def letters_identified(self,img):
         x1 = self.state.roi[0]
@@ -193,7 +189,8 @@ class Perception():
 
         pic_post_process = Image.fromarray(truncated_img)
         pic_post_process.save('frame_post_process.png')
-        text = self.ocr_core('frame_post_process.png')
+
+        text = pytesseract.image_to_string(Image.open('frame_post_process.png')) 
         text = text[:2]
         print("Target:", self.target_word_split[self.state.word_section_ind])
         print("Text Identified:", text)
