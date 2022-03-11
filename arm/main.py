@@ -3,7 +3,7 @@ import logging
 import argparse
 import threading
 
-from move import Move
+from flip import Flip
 from camera import Camera
 from perception import Perception
 from shared_state import SharedState
@@ -15,29 +15,17 @@ def main(config):
 
     #Init arm and camera objects
     target_colors = ('red', 'green', 'blue')
-    shared_state = SharedState(target_colors, config.function)
+    shared_state = SharedState(target_colors, 3)
     shared_state.start()
 
     perception = Perception(shared_state)
-    move = Move(shared_state)
+    move = Flip(shared_state)
     camera = Camera()
     camera.camera_open()
 
     #Set up functions to use
-    percept_func = perception.identify_single_color
-    if config.function != "1":
-        percept_func = perception.identify_multiple_colors
-
-    move_func = move.move_block
-    if config.function == "2":
-        logging.debug("Sort Blocks")
-        move_func = move.sort_blocks
-    elif config.function == "3":
-        logging.debug("Stack Blocks")
-        move_func = move.stack_blocks
-    elif config.function != "1":
-        print("Invalid Function Choice!")
-        exit()
+    move_func = move.flip_block
+    percept_func = perception.identify_multiple_colors
 
     # Use the threads the same way original code did
     # they share too much information to quickly integrate
@@ -69,5 +57,5 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--debug', action='store_true',
                         help='Debug flag')
-    parser.add_argument('-f', '--function', default=1,  help='1. Move block \n2. Sort Blocks \n3. Palletize Blocks')
+    # parser.add_argument('-f', '--function', default=1,  help='1. Move block \n2. Sort Blocks \n3. Palletize Blocks')
     main(parser.parse_args())
