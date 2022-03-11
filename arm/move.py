@@ -137,6 +137,7 @@ class Move():
                         self.state.get_roi = False
                         self.state.action_finish = True
                         self.state.start_pick_up = False
+                        self.state.section_ind += 1
                         self.set_rgb(self.state.detect_color)
                     else:
                         time.sleep(0.01)
@@ -329,7 +330,7 @@ class Move():
                         self.state.AK.setPitchRangeMoving((coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90, -90, 0, 800)
                         time.sleep(0.8)
 
-                        self.state.init()  # 回到初始位置
+                        self.state.init() 
                         time.sleep(1.5)
 
                         self.state.detect_color = 'None'

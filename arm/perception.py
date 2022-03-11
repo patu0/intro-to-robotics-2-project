@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 # coding=utf8
 import sys
+sys.path.append('/home/arm/.local/lib/python3.7/site-packages')
+import pytesseract
 sys.path.append('ArmPi/')
 
 import cv2
@@ -8,6 +10,8 @@ import time
 import math
 import logging
 import numpy as np
+# import pytesseract
+from PIL import Image
 from LABConfig import color_range
 from ArmIK.Transform import *
 from ArmIK.ArmMoveIK import *
@@ -20,6 +24,9 @@ logging.basicConfig(format=logging_format, level=logging.ERROR , datefmt="%H:%M:
 class Perception():
     def __init__(self, shared_state):
         self.state = shared_state
+
+        self.target_word = "ACTING"
+        self.target_word_split = [self.target_word[index : index + 2] for index in range(0, len(self.target_word), 2)]
         
 
     def getAreaMaxContour(self, contours):
@@ -58,13 +65,14 @@ class Perception():
         if self.state.start_count_t1:
             self.state.start_count_t1 = False
             self.state.t1 = time.time()
-        if time.time() - self.state.t1 > 1.5:
+        if time.time() - self.state.t1 > 1.0:
             self.state.rotation_angle = self.state.rect[2]
             self.state.start_count_t1 = True
             self.state.world_X, self.state.world_Y = np.mean(np.array(self.state.center_list).reshape(self.state.count, 2), axis=0)
             self.state.count = 0
             self.state.center_list = []
             self.state.start_pick_up = True
+            
 
     def update_world_coord(self):
         img_centerx, img_centery = getCenter(self.state.rect, self.state.roi, self.state.size, square_length)
@@ -153,12 +161,53 @@ class Perception():
             cv2.putText(img, "Color: " + self.state.detect_color, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.65, self.state.range_rgb[self.state.detect_color], 2)
         
         return img
+
+
+    def letters_identified(self,img):
+        x1 = self.state.roi[0]
+        x2 = self.state.roi[1]
+        y1 = self.state.roi[2]
+        y2 = self.state.roi[3]
+        scale_factor = 15
+        #crop right,bottom,top,left
+        truncated_img= np.delete(img,np.s_[x2-scale_factor:],1)
+        truncated_img= np.delete(truncated_img,np.s_[y2-scale_factor:],0)
+        truncated_img = np.delete(truncated_img, np.s_[:y1+scale_factor],0)
+        truncated_img = np.delete(truncated_img, np.s_[:x1+scale_factor],1)
+
+        print("Shape of truncated image:", truncated_img.shape)
+        pic_pre_process = Image.fromarray(truncated_img)
+        pic_pre_process.save('frame_pre_process.png')
+
+        truncated_img = cv2.cvtColor(truncated_img, cv2.COLOR_BGR2GRAY)
+        pic_gray = Image.fromarray(truncated_img)
+        pic_gray.save('frame_gray.png')
+        norm_img = np.zeros((img.shape[0], img.shape[1]))
+        truncated_img = cv2.normalize(truncated_img, norm_img, 0, 255, cv2.NORM_MINMAX)
+        truncated_img = cv2.threshold(truncated_img, 100, 255, cv2.THRESH_BINARY)[1]
+        truncated_img = cv2.GaussianBlur(truncated_img, (1, 1), 0)
+
+        pic_post_process = Image.fromarray(truncated_img)
+        pic_post_process.save('frame_post_process.png')
+
+        text = pytesseract.image_to_string(Image.open('frame_post_process.png')) 
+        text = text[:2]
+        print("Target:", self.target_word_split[self.state.word_section_ind])
+        print("Text Identified:", text)
+        if text == self.target_word_split[self.state.word_section_ind]:
+            return True
+        else:
+            return False
         
+
+
     def identify_single_color(self, img):
+        print('======================')
+        # print(img.shape)
         img_copy = img.copy()
         img_h, img_w = img.shape[:2]
-        cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
-        cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
+        # cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
+        # cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
         
         if not self.state.isRunning:
             return img
@@ -178,13 +227,13 @@ class Perception():
                 if i in self.state.target_color:
                     self.state.detect_color = i
                     areaMaxContour, area_max = self.get_max_area(frame_lab, i)
-                    
-                   
             if area_max > 2500:  # 有找到最大面积
                 self.state.rect = cv2.minAreaRect(areaMaxContour)
                 box = np.int0(cv2.boxPoints(self.state.rect))
+                # print(box)
 
                 self.state.roi = getROI(box)
+                print(self.state.roi)
                 self.state.get_roi = True
 
                 self.update_world_coord()
@@ -193,12 +242,15 @@ class Perception():
                 img, distance = self.draw_box(box, img)
 
                 if self.state.action_finish:
-                    if distance < 0.3:
+                    if distance < 0.3 and self.letters_identified(img):
                         self.update_state()
                     else:
                         self.state.t1 = time.time()
                         self.state.start_count_t1 = True
                         self.state.count = 0
                         self.state.center_list = []
+                
+                
+                
         return img
-    
+
