@@ -137,7 +137,7 @@ class Move():
                         self.state.get_roi = False
                         self.state.action_finish = True
                         self.state.start_pick_up = False
-                        self.state.section_ind += 1
+                        self.state.word_section_ind += 1
                         self.set_rgb(self.state.detect_color)
                     else:
                         time.sleep(0.01)
@@ -155,9 +155,9 @@ class Move():
     def sort_blocks(self):
         '''Sort blocks into their spot'''
         coordinate = {
-            'red':   (-15 + 0.5, 12 - 0.5, 1.5),
+            'blue':   (-15 + 0.5, 12 - 0.5, 1.5),
             'green': (-15 + 0.5, 6 - 0.5,  1.5),
-            'blue':  (-15 + 0.5, 0 - 0.5,  1.5),
+            'red':  (-15 + 0.5, 0 - 0.5,  1.5),
         } 
         
         while True:
@@ -232,6 +232,7 @@ class Move():
                         self.state.detect_color = 'None'
                         self.state.get_roi = False
                         self.state.start_pick_up = False
+                        self.state.word_section_ind += 1
                         self.set_rgb(self.state.detect_color)
             else:
                 if self.state._stop:
@@ -330,7 +331,7 @@ class Move():
                         self.state.AK.setPitchRangeMoving((coordinate[self.state.detect_color][0], coordinate[self.state.detect_color][1], 12), -90, -90, 0, 800)
                         time.sleep(0.8)
 
-                        self.state.init() 
+                        self.state.init()  # 回到初始位置
                         time.sleep(1.5)
 
                         self.state.detect_color = 'None'

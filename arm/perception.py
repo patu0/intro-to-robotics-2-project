@@ -65,7 +65,7 @@ class Perception():
         if self.state.start_count_t1:
             self.state.start_count_t1 = False
             self.state.t1 = time.time()
-        if time.time() - self.state.t1 > 1.0:
+        if time.time() - self.state.t1 > 1.5:
             self.state.rotation_angle = self.state.rect[2]
             self.state.start_count_t1 = True
             self.state.world_X, self.state.world_Y = np.mean(np.array(self.state.center_list).reshape(self.state.count, 2), axis=0)
@@ -82,8 +82,8 @@ class Perception():
     def identify_multiple_colors(self, img):    
         img_copy = img.copy()
         img_h, img_w = img.shape[:2]
-        cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
-        cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
+        #cv2.line(img, (0, int(img_h / 2)), (img_w, int(img_h / 2)), (0, 0, 200), 1)
+        #cv2.line(img, (int(img_w / 2), 0), (int(img_w / 2), img_h), (0, 0, 200), 1)
 
         if not self.state.isRunning:
             return img
@@ -130,7 +130,7 @@ class Perception():
                     self.state.color_list.append(color)
 
                     # 累计判断
-                    if distance < 0.5:
+                    if distance < 0.3 and self.letters_identified(img):
                         self.update_state()
                     else:
                         self.state.t1 = time.time()
@@ -138,8 +138,7 @@ class Perception():
                         self.state.count = 0
                         self.state.center_list = []
 
-                    if len(self.state.color_list) == 3:  # 多次判断
-                        # 取平均值
+                    if len(self.state.color_list) == 3: 
                         color = int(round(np.mean(np.array(self.state.color_list))))
                         self.state.color_list = []
                         if color == 1:
@@ -153,9 +152,7 @@ class Perception():
             else:
                 if not self.state.start_pick_up:
                     self.state.detect_color = "None"
-        
-        if self.state.move_square:
-            cv2.putText(img, "Make sure no blocks in the stacking area", (15, int(img.shape[0]/2)), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)    
+
         
         if self.state.detect_color != "None":
             cv2.putText(img, "Color: " + self.state.detect_color, (10, img.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.65, self.state.range_rgb[self.state.detect_color], 2)
@@ -202,7 +199,7 @@ class Perception():
 
 
     def identify_single_color(self, img):
-        print('======================')
+        #print('======================')
         # print(img.shape)
         img_copy = img.copy()
         img_h, img_w = img.shape[:2]
@@ -248,9 +245,7 @@ class Perception():
                         self.state.t1 = time.time()
                         self.state.start_count_t1 = True
                         self.state.count = 0
-                        self.state.center_list = []
-                
-                
+                        self.state.center_list = []            
                 
         return img
 
