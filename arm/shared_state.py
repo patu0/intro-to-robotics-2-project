@@ -34,6 +34,7 @@ class SharedState():
         self.start_count_t1 = True
         self.move_square = False #TODO: Do we need this here?
         self.color_list = []
+        self.word_section_ind = 0
 
         self.target_color = target_colors
         if int(multi_color_flag) <= 1:

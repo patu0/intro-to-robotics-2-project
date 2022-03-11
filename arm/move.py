@@ -137,6 +137,7 @@ class Move():
                         self.state.get_roi = False
                         self.state.action_finish = True
                         self.state.start_pick_up = False
+                        self.state.section_ind += 1
                         self.set_rgb(self.state.detect_color)
                     else:
                         time.sleep(0.01)
