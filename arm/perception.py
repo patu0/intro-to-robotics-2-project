@@ -25,7 +25,7 @@ class Perception():
     def __init__(self, shared_state):
         self.state = shared_state
 
-        self.target_word = "ACTING"
+        self.target_word = "ROBOTS"
         self.target_word_split = [self.target_word[index : index + 2] for index in range(0, len(self.target_word), 2)]
         
 
@@ -59,13 +59,27 @@ class Perception():
         distance = math.sqrt(pow(self.state.world_x - self.state.last_x, 2) + pow(self.state.world_y - self.state.last_y, 2))
         return img, distance
 
+    def update_flip_state(self):
+        self.state.center_list.extend((self.state.world_x, self.state.world_y))
+        self.state.count += 1
+        if self.state.start_count_t1:
+            self.state.start_count_t1 = False
+            self.state.t1 = time.time()
+        if time.time() - self.state.t1 > 3:
+            self.state.rotation_angle = self.state.rect[2]
+            self.state.start_count_t1 = True
+            self.state.world_X, self.state.world_Y = np.mean(np.array(self.state.center_list).reshape(self.state.count, 2), axis=0)
+            self.state.count = 0
+            self.state.center_list = []
+            self.state.start_flip = True
+
     def update_state(self):
         self.state.center_list.extend((self.state.world_x, self.state.world_y))
         self.state.count += 1
         if self.state.start_count_t1:
             self.state.start_count_t1 = False
             self.state.t1 = time.time()
-        if time.time() - self.state.t1 > 1.5:
+        if time.time() - self.state.t1 > 3:
             self.state.rotation_angle = self.state.rect[2]
             self.state.start_count_t1 = True
             self.state.world_X, self.state.world_Y = np.mean(np.array(self.state.center_list).reshape(self.state.count, 2), axis=0)
@@ -98,7 +112,7 @@ class Perception():
         max_area = 0
         areaMaxContour_max = 0
         
-        if not self.state.start_pick_up:
+        if not self.state.start_pick_up and not self.state.start_flip:
             for i in color_range:
                 if i in self.state.target_color:
                     areaMaxContour, area_max = self.get_max_area(frame_lab, i)
@@ -115,10 +129,10 @@ class Perception():
                 self.state.get_roi = True
                 self.update_world_coord()
 
-                if not self.state.start_pick_up:
+                if not self.state.start_pick_up and not self.state.start_flip:
                     img, distance = self.draw_box(box, img)
 
-                if not self.state.start_pick_up:
+                if not self.state.start_pick_up and not self.state.start_flip:
                     if self.state.detect_color == 'red':  # 红色最大
                         color = 1
                     elif self.state.detect_color == 'green':  # 绿色最大
@@ -130,8 +144,11 @@ class Perception():
                     self.state.color_list.append(color)
 
                     # 累计判断
-                    if distance < 0.3 and self.letters_identified(img):
-                        self.update_state()
+                    if distance < 0.3:
+                        if not (self.letters_identified(img)):
+                            self.update_flip_state()
+                        else:
+                            self.update_state()
                     else:
                         self.state.t1 = time.time()
                         self.state.start_count_t1 = True
@@ -150,7 +167,7 @@ class Perception():
                         else:
                             self.state.detect_color = 'black'
             else:
-                if not self.state.start_pick_up:
+                if not self.state.start_pick_up and not self.state.start_flip:
                     self.state.detect_color = "None"
 
         
@@ -188,7 +205,7 @@ class Perception():
         pic_post_process.save('frame_post_process.png')
 
         text = pytesseract.image_to_string(Image.open('frame_post_process.png')) 
-        text = text[:2]
+        text = str(text[:2]).upper()
         print("Target:", self.target_word_split[self.state.word_section_ind])
         print("Text Identified:", text)
         if text == self.target_word_split[self.state.word_section_ind]:

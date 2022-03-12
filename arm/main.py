@@ -3,7 +3,6 @@ import logging
 import argparse
 import threading
 
-from move import Move
 from flip import Flip
 from camera import Camera
 from perception import Perception
@@ -20,20 +19,23 @@ def main(config):
     shared_state.start()
 
     perception = Perception(shared_state)
-    move = Move(shared_state)
+    move = Flip(shared_state)
     camera = Camera()
     camera.camera_open()
 
     #Set up functions to use
     percept_func = perception.identify_multiple_colors
-    move_func = move.sort_blocks
 
     # Use the threads the same way original code did
     # they share too much information to quickly integrate
     # a consumer-producer framework
 
-    #Start move thread
-    move_thread = threading.Thread(target=move_func, daemon=True)
+    #Start flip thread
+    flip_thread = threading.Thread(target=move.flip_block, daemon=True)
+    flip_thread.start()
+    
+    #Start sort blocks thread
+    move_thread = threading.Thread(target=move.sort_blocks, daemon=True)
     move_thread.start()
 
     #Start camera thread

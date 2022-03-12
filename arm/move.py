@@ -162,7 +162,7 @@ class Move():
         
         while True:
             if self.state.isRunning:        
-                if self.state.detect_color != 'None' and self.state.start_pick_up:
+                if self.state.detect_color != 'None' and self.state.start_flip:
                     self.set_rgb(self.state.detect_color)
                     self.setBuzzer(0.1)
                     result = self.state.AK.setPitchRangeMoving((self.state.world_X, self.state.world_Y, 7), -90, -90, 0)  
@@ -256,7 +256,7 @@ class Move():
 
         while True:
             if self.state.isRunning:
-                if self.state.detect_color != 'None' and self.state.start_pick_up:  # 如果检测到方块没有移动一段时间后，开始夹取
+                if self.state.detect_color != 'None' and self.state.start_pick_up:
                     self.set_rgb(self.state.detect_color)
                     self.setBuzzer(0.1)
                     # 高度累加

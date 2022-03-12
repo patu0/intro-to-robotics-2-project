@@ -31,6 +31,7 @@ class SharedState():
         self.detect_color = 'None'
         self.action_finish = True
         self.start_pick_up = False
+        self.start_flip = False
         self.start_count_t1 = True
         self.move_square = False #TODO: Do we need this here?
         self.color_list = []
@@ -72,6 +73,7 @@ class SharedState():
         self.detect_color = 'None'
         self.action_finish = True
         self.start_pick_up = False
+        self.start_flip = False
         self.start_count_t1 = True
         self.move_square = False #TODO: Do we need this here?
         self.color_list = []
